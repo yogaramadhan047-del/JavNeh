@@ -1,0 +1,6 @@
+{
+  "name": "XStream21",
+  "description": "Platform streaming Anime dan Drama Jepang subtitle Indonesia dengan berita, review, dan artikel terkini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

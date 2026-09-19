@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --bg-main: #09090b;
+  --bg-card: #18181b;
+  --border-main: #27272a;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --text-muted-hover: #ffffff;
+  color-scheme: dark;
+}
+
+.dark {
+  --bg-main: #09090b;
+  --bg-card: #18181b;
+  --border-main: #27272a;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --text-muted-hover: #ffffff;
+  color-scheme: dark;
+}
+
+.admin-theme {
+  --bg-main: #09090b;
+  --bg-card: #18181b;
+  --border-main: #27272a;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --text-muted-hover: #ffffff;
+  color-scheme: dark;
+}
+
+@theme {
+  --color-primary-blue: #2563eb;
+  --color-primary-blue-hover: #1d4ed8;
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-background-dark: var(--bg-main);
+  --color-card-dark: var(--bg-card);
+  --color-border-dark: var(--border-main);
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-text-muted-hover: var(--text-muted-hover);
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
