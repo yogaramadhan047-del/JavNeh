@@ -36,8 +36,9 @@ export function MovieForm({ initialData, isEdit = false }: MovieFormProps) {
     posterUrl: initialData?.posterUrl || "",
     bannerUrl: initialData?.bannerUrl || "",
     trailerUrl: initialData?.trailerUrl || "",
+    downloadUrl: initialData?.downloadUrl || initialData?.realDownloadUrl || "",
     trapDownloadUrl: initialData?.trapDownloadUrl || "",
-    realDownloadUrl: initialData?.realDownloadUrl || "",
+    realDownloadUrl: initialData?.realDownloadUrl || initialData?.downloadUrl || "",
     status: initialData?.status || "Published",
     seoTitle: initialData?.seoTitle || "",
     seoDescription: initialData?.seoDescription || "",
@@ -429,6 +430,30 @@ export function MovieForm({ initialData, isEdit = false }: MovieFormProps) {
           onChange={setServers}
           disabled={isFormDisabled}
         />
+
+        {/* Download URL */}
+        <div className="pt-4 border-t border-border-dark">
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            URL Download Eksternal (Opsional)
+          </label>
+          <p className="text-xs text-text-muted mb-2">
+            Masukkan link download eksternal (misal: Google Drive, Mega, MediaFire). Tombol Download akan otomatis tampil di halaman konten jika kolom ini diisi.
+          </p>
+          <input
+            type="url"
+            value={formData.downloadUrl}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                downloadUrl: e.target.value,
+                realDownloadUrl: e.target.value,
+              }))
+            }
+            disabled={isFormDisabled}
+            placeholder="Contoh: https://drive.google.com/... atau https://mega.nz/..."
+            className="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary-blue text-sm"
+          />
+        </div>
       </div>
 
       {/* 5. SEO & Metadata */}

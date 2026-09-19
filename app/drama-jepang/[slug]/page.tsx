@@ -113,8 +113,9 @@ export default async function DramaJepangDetailPage({
 
   const episodes = series ? series.episodes || [] : [];
   const servers = movie ? movie.servers || [] : [];
+  const downloadUrl = series?.downloadUrl || movie?.downloadUrl || series?.realDownloadUrl || movie?.realDownloadUrl;
   const trapDownloadUrl = series?.trapDownloadUrl || movie?.trapDownloadUrl;
-  const realDownloadUrl = series?.realDownloadUrl || movie?.realDownloadUrl;
+  const realDownloadUrl = series?.realDownloadUrl || movie?.realDownloadUrl || downloadUrl;
 
   const [allSeries, allMovies] = await Promise.all([
     getSeriesList({ status: "Published", category: "Drama Jepang", limit: 6 }).catch(() => []),
@@ -317,6 +318,7 @@ export default async function DramaJepangDetailPage({
           servers={servers}
           posterUrl={bannerUrl || posterUrl}
           title={title}
+          downloadUrl={downloadUrl}
           trapDownloadUrl={trapDownloadUrl}
           realDownloadUrl={realDownloadUrl}
         />

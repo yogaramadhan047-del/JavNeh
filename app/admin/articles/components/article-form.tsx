@@ -64,14 +64,21 @@ export function ArticleForm({ initialData, isEdit = false }: ArticleFormProps) {
     setError("");
 
     try {
+      const singleImage = formData.bannerUrl || formData.thumbnailUrl || "";
+      const articlePayload = {
+        ...formData,
+        thumbnailUrl: singleImage,
+        bannerUrl: singleImage,
+      };
+
       if (isEdit && initialData?.id) {
-        const { error: updateErr } = await updateArticle(initialData.id, formData);
+        const { error: updateErr } = await updateArticle(initialData.id, articlePayload);
         if (updateErr) {
           throw new Error(updateErr);
         }
       } else {
         const { error: createErr } = await createArticle({
-          ...formData,
+          ...articlePayload,
           views: 0,
           likes: 0,
           commentCount: 0,
@@ -219,25 +226,16 @@ export function ArticleForm({ initialData, isEdit = false }: ArticleFormProps) {
       {/* 3. Media & Uploads */}
       <div className="bg-card-dark border border-border-dark rounded-xl p-6 space-y-4">
         <h2 className="text-lg font-bold text-white mb-2">3. Media Gambar</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <p className="text-xs text-text-muted mb-4">
+          Unggah 1 gambar landscape (16:9). Gambar ini otomatis digunakan untuk banner artikel, kartu berita, dan Open Graph media sosial. Maksimal ukuran file 5MB.
+        </p>
+        <div className="max-w-xl">
           <ImageUpload
-            label="Banner Landscape (16:9)"
-            value={formData.bannerUrl}
-            onChange={(url) => setFormData((prev) => ({ ...prev, bannerUrl: url }))}
+            label="Landscape Image (16:9)"
+            value={formData.bannerUrl || formData.thumbnailUrl}
+            onChange={(url) => setFormData((prev) => ({ ...prev, bannerUrl: url, thumbnailUrl: url }))}
             aspectRatio="16/9"
-            path="articles/banners"
-            maxSizeMB={5}
-            onUploadStart={() => setUploadingCount((prev) => prev + 1)}
-            onUploadEnd={() => setUploadingCount((prev) => Math.max(0, prev - 1))}
-            onError={(msg) => setError(msg)}
-            disabled={isFormDisabled}
-          />
-          <ImageUpload
-            label="Thumbnail Landscape (16:9)"
-            value={formData.thumbnailUrl}
-            onChange={(url) => setFormData((prev) => ({ ...prev, thumbnailUrl: url }))}
-            aspectRatio="16/9"
-            path="articles/thumbnails"
+            path="articles/landscape"
             maxSizeMB={5}
             onUploadStart={() => setUploadingCount((prev) => prev + 1)}
             onUploadEnd={() => setUploadingCount((prev) => Math.max(0, prev - 1))}

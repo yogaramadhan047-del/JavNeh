@@ -40,25 +40,18 @@ export default function AdminLayout({
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT" || !session) {
         document.cookie = "admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict";
         setIsAuthenticated(false);
         if (!isLoginPage) {
           router.replace("/admin/login");
         }
-      } else if (session) {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (user && !error) {
+      } else if (session?.user) {
+        if (session.access_token) {
           document.cookie = `admin_token=${session.access_token}; path=/; max-age=86400; secure; samesite=strict`;
-          setIsAuthenticated(true);
-        } else {
-          document.cookie = "admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict";
-          setIsAuthenticated(false);
-          if (!isLoginPage) {
-            router.replace("/admin/login");
-          }
         }
+        setIsAuthenticated(true);
       }
     });
 

@@ -15,6 +15,7 @@ export interface Database {
       movies: {
         Row: {
           id: string;
+          category: string;
           title: string;
           slug: string;
           original_title: string;
@@ -34,6 +35,7 @@ export interface Database {
           poster_url: string;
           banner_url: string;
           trailer_url: string;
+          download_url: string | null;
           trap_download_url: string | null;
           real_download_url: string | null;
           servers: Json;
@@ -52,6 +54,8 @@ export interface Database {
       series: {
         Row: {
           id: string;
+          category: string;
+          status: string;
           title: string;
           slug: string;
           original_title: string;
@@ -71,9 +75,12 @@ export interface Database {
           poster_url: string;
           banner_url: string;
           trailer_url: string;
+          download_url: string | null;
           trap_download_url: string | null;
           real_download_url: string | null;
           episodes: Json;
+          total_seasons: number;
+          total_episodes: number;
           synopsis: string;
           views: number;
           seo_title: string | null;

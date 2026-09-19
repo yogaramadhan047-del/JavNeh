@@ -41,8 +41,9 @@ export interface Series {
   posterUrl: string;
   bannerUrl: string;
   trailerUrl: string;
-  trapDownloadUrl: string;
-  realDownloadUrl: string;
+  downloadUrl?: string;
+  trapDownloadUrl?: string;
+  realDownloadUrl?: string;
   episodes?: Episode[];
   totalSeasons?: number;
   totalEpisodes?: number;

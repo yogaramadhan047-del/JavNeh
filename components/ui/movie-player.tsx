@@ -11,6 +11,7 @@ interface MoviePlayerProps {
   trailerUrl?: string;
   posterUrl?: string;
   title?: string;
+  downloadUrl?: string;
   trapDownloadUrl?: string;
   realDownloadUrl?: string;
 }
@@ -21,7 +22,11 @@ export function MoviePlayer(props: MoviePlayerProps) {
   const trailerUrl = props.movie ? props.movie.trailerUrl : props.trailerUrl;
   const posterUrl = props.movie ? (props.movie.bannerUrl || props.movie.posterUrl) : props.posterUrl;
   const trapDownloadUrl = props.movie ? props.movie.trapDownloadUrl : props.trapDownloadUrl;
-  const realDownloadUrl = props.movie ? props.movie.realDownloadUrl : props.realDownloadUrl;
+  const effectiveDownloadUrl =
+    props.movie?.downloadUrl ||
+    props.downloadUrl ||
+    props.movie?.realDownloadUrl ||
+    props.realDownloadUrl;
   const [activeServer, setActiveServer] = useState<MovieServer | null>(
     servers && servers.length > 0 ? servers[0] : null
   );
@@ -98,9 +103,9 @@ export function MoviePlayer(props: MoviePlayerProps) {
         </div>
 
         <div className="flex items-center gap-2 w-full md:w-auto shrink-0 mt-2 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-border-dark">
-          {realDownloadUrl && (
+          {effectiveDownloadUrl && (
             <a
-              href={realDownloadUrl}
+              href={effectiveDownloadUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-bold transition-colors w-full md:w-auto shadow-lg shadow-green-600/20"

@@ -47,6 +47,7 @@ export interface Movie {
   posterUrl: string;
   bannerUrl: string;
   trailerUrl: string;
+  downloadUrl?: string;
   trapDownloadUrl?: string;
   realDownloadUrl?: string;
   servers: MovieServer[];

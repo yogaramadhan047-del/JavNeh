@@ -17,6 +17,7 @@ interface DramaPlayerProps {
   trailerUrl?: string;
   posterUrl?: string;
   title: string;
+  downloadUrl?: string;
   trapDownloadUrl?: string;
   realDownloadUrl?: string;
 }
@@ -28,6 +29,7 @@ export function DramaPlayer({
   trailerUrl,
   posterUrl,
   title,
+  downloadUrl,
   trapDownloadUrl,
   realDownloadUrl,
 }: DramaPlayerProps) {
@@ -60,7 +62,7 @@ export function DramaPlayer({
     setIsPlaying(true);
   };
 
-  const effectiveDownloadUrl = realDownloadUrl || trapDownloadUrl;
+  const effectiveDownloadUrl = downloadUrl || realDownloadUrl || trapDownloadUrl;
 
   return (
     <div className="w-full flex flex-col gap-6">

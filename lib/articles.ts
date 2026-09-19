@@ -37,7 +37,8 @@ export function mapArticleFromDb(row: Record<string, unknown> | null | undefined
 }
 
 /**
- * Normalizes form data to Supabase database payload
+ * Normalizes form data to Supabase database payload.
+ * STRICT: Only includes exact database columns in snake_case to prevent PGRST204 schema cache errors.
  */
 export function mapArticleToDb(data: Partial<Article>) {
   const now = new Date().toISOString();
@@ -47,43 +48,21 @@ export function mapArticleToDb(data: Partial<Article>) {
   if (data.slug !== undefined) payload.slug = data.slug;
   if (data.excerpt !== undefined) payload.excerpt = data.excerpt;
   if (data.content !== undefined) payload.content = data.content;
-  if (data.thumbnailUrl !== undefined) {
-    payload.thumbnail_url = data.thumbnailUrl;
-    payload.thumbnailUrl = data.thumbnailUrl;
-  }
-  if (data.bannerUrl !== undefined) {
-    payload.banner_url = data.bannerUrl;
-    payload.bannerUrl = data.bannerUrl;
-  }
+  if (data.thumbnailUrl !== undefined) payload.thumbnail_url = data.thumbnailUrl;
+  if (data.bannerUrl !== undefined) payload.banner_url = data.bannerUrl;
   if (data.category !== undefined) payload.category = data.category;
   if (data.tags !== undefined) payload.tags = data.tags;
   if (data.author !== undefined) payload.author = data.author;
   if (data.status !== undefined) payload.status = data.status;
   if (data.featured !== undefined) payload.featured = data.featured;
-  if (data.isGlobalNews !== undefined) {
-    payload.is_global_news = data.isGlobalNews;
-    payload.isGlobalNews = data.isGlobalNews;
-  }
+  if (data.isGlobalNews !== undefined) payload.is_global_news = data.isGlobalNews;
   if (data.views !== undefined) payload.views = data.views;
-  if (data.readingTime !== undefined) {
-    payload.reading_time = data.readingTime;
-    payload.readingTime = data.readingTime;
-  }
-  if (data.seoTitle !== undefined) {
-    payload.seo_title = data.seoTitle;
-    payload.seoTitle = data.seoTitle;
-  }
-  if (data.seoDescription !== undefined) {
-    payload.seo_description = data.seoDescription;
-    payload.seoDescription = data.seoDescription;
-  }
-  if (data.seoKeywords !== undefined) {
-    payload.seo_keywords = data.seoKeywords;
-    payload.seoKeywords = data.seoKeywords;
-  }
+  if (data.readingTime !== undefined) payload.reading_time = data.readingTime;
+  if (data.seoTitle !== undefined) payload.seo_title = data.seoTitle;
+  if (data.seoDescription !== undefined) payload.seo_description = data.seoDescription;
+  if (data.seoKeywords !== undefined) payload.seo_keywords = data.seoKeywords;
 
   payload.updated_at = now;
-  payload.updatedAt = now;
 
   return payload;
 }
@@ -215,6 +194,22 @@ export async function getRelatedArticles(
   }
 }
 
+async function withTimeout<T>(
+  promise: PromiseLike<T>,
+  timeoutMs = 20000,
+  errorMsg = "Koneksi ke Supabase melebihi batas waktu (timeout). Silakan periksa koneksi internet Anda."
+): Promise<T> {
+  let timer: NodeJS.Timeout;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(errorMsg)), timeoutMs);
+  });
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    clearTimeout(timer!);
+  }
+}
+
 /**
  * Create an article in Supabase
  */
@@ -226,26 +221,35 @@ export async function createArticle(data: Omit<Article, "id">): Promise<{ articl
       views: 0,
       likes: 0,
       comment_count: 0,
-      commentCount: 0,
       created_at: now,
-      createdAt: now,
       published_at: now,
-      publishedAt: now,
     };
 
-    const { data: inserted, error } = await supabase
+    const insertQuery = supabase
       .from("articles")
       .insert(payload)
       .select()
-      .single();
+      .maybeSingle();
+
+    const { data: inserted, error } = await withTimeout(
+      insertQuery,
+      20000,
+      "Gagal menyimpan artikel: Waktu koneksi ke database habis (timeout). Silakan coba lagi."
+    );
 
     if (error) {
       console.error("Error creating article:", error);
       return { error: error.message };
     }
 
-    const createdArticle = mapArticleFromDb(inserted);
-    await revalidateContent("article", createdArticle.category, createdArticle.slug).catch(() => {});
+    const createdArticle = inserted
+      ? mapArticleFromDb(inserted)
+      : mapArticleFromDb({ ...payload, id: (inserted as any)?.id || crypto.randomUUID() });
+
+    // Non-blocking revalidation
+    withTimeout(revalidateContent("article", createdArticle.category, createdArticle.slug), 5000).catch((err) => {
+      console.warn("Revalidation warning:", err);
+    });
 
     return { article: createdArticle };
   } catch (err) {
@@ -264,20 +268,32 @@ export async function updateArticle(
   try {
     const payload = mapArticleToDb(data);
 
-    const { data: updated, error } = await supabase
+    const updateQuery = supabase
       .from("articles")
       .update(payload)
       .eq("id", id)
       .select()
-      .single();
+      .maybeSingle();
+
+    const { data: updated, error } = await withTimeout(
+      updateQuery,
+      20000,
+      "Gagal memperbarui artikel: Waktu koneksi ke database habis (timeout). Silakan coba lagi."
+    );
 
     if (error) {
       console.error("Error updating article:", error);
       return { error: error.message };
     }
 
-    const updatedArticle = mapArticleFromDb(updated);
-    await revalidateContent("article", updatedArticle.category, updatedArticle.slug).catch(() => {});
+    const updatedArticle = updated
+      ? mapArticleFromDb(updated)
+      : mapArticleFromDb({ ...payload, id });
+
+    // Non-blocking revalidation
+    withTimeout(revalidateContent("article", updatedArticle.category, updatedArticle.slug), 5000).catch((err) => {
+      console.warn("Revalidation warning:", err);
+    });
 
     return { article: updatedArticle };
   } catch (err) {

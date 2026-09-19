@@ -34,6 +34,13 @@ export function mapMovieFromDb(row: Record<string, unknown> | null | undefined):
   const genres = parseJsonArray<string>(row.genres);
   const tags = parseJsonArray<string>(row.tags);
 
+  const downloadUrl =
+    (row.download_url as string) ??
+    (row.downloadUrl as string) ??
+    (row.real_download_url as string) ??
+    (row.realDownloadUrl as string) ??
+    "";
+
   return {
     id: String(row.id || ""),
     category,
@@ -56,8 +63,9 @@ export function mapMovieFromDb(row: Record<string, unknown> | null | undefined):
     posterUrl: (row.poster_url as string) ?? (row.posterUrl as string) ?? "",
     bannerUrl: (row.banner_url as string) ?? (row.bannerUrl as string) ?? "",
     trailerUrl: (row.trailer_url as string) ?? (row.trailerUrl as string) ?? "",
+    downloadUrl,
     trapDownloadUrl: (row.trap_download_url as string) ?? (row.trapDownloadUrl as string) ?? "",
-    realDownloadUrl: (row.real_download_url as string) ?? (row.realDownloadUrl as string) ?? "",
+    realDownloadUrl: (row.real_download_url as string) ?? (row.realDownloadUrl as string) ?? downloadUrl,
     servers,
     synopsis: (row.synopsis as string) || "",
     views: Number(row.views || 0),
@@ -71,7 +79,8 @@ export function mapMovieFromDb(row: Record<string, unknown> | null | undefined):
 }
 
 /**
- * Normalizes form data to Supabase database payload
+ * Normalizes form data to Supabase database payload.
+ * STRICT: Only includes exact database columns in snake_case to prevent PGRST204 schema cache errors.
  */
 export function mapMovieToDb(data: Partial<Movie>) {
   const now = new Date().toISOString();
@@ -80,15 +89,9 @@ export function mapMovieToDb(data: Partial<Movie>) {
   if (data.category !== undefined) payload.category = data.category;
   if (data.title !== undefined) payload.title = data.title;
   if (data.slug !== undefined) payload.slug = data.slug;
-  if (data.originalTitle !== undefined) {
-    payload.original_title = data.originalTitle;
-    payload.originalTitle = data.originalTitle;
-  }
+  if (data.originalTitle !== undefined) payload.original_title = data.originalTitle;
   if (data.year !== undefined) payload.year = Number(data.year);
-  if (data.releaseDate !== undefined) {
-    payload.release_date = data.releaseDate;
-    payload.releaseDate = data.releaseDate;
-  }
+  if (data.releaseDate !== undefined) payload.release_date = data.releaseDate;
   if (data.rating !== undefined) payload.rating = Number(data.rating);
   if (data.imdb !== undefined) payload.imdb = Number(data.imdb);
   if (data.genres !== undefined) payload.genres = data.genres;
@@ -100,45 +103,25 @@ export function mapMovieToDb(data: Partial<Movie>) {
   if (data.studio !== undefined) payload.studio = data.studio;
   if (data.resolution !== undefined) payload.resolution = data.resolution;
   if (data.badge !== undefined) payload.badge = data.badge;
-  if (data.posterUrl !== undefined) {
-    payload.poster_url = data.posterUrl;
-    payload.posterUrl = data.posterUrl;
+  if (data.posterUrl !== undefined) payload.poster_url = data.posterUrl;
+  if (data.bannerUrl !== undefined) payload.banner_url = data.bannerUrl;
+  if (data.trailerUrl !== undefined) payload.trailer_url = data.trailerUrl;
+
+  const resolvedDownload = data.downloadUrl !== undefined ? data.downloadUrl : data.realDownloadUrl;
+  if (resolvedDownload !== undefined) {
+    payload.download_url = resolvedDownload;
+    payload.real_download_url = resolvedDownload;
   }
-  if (data.bannerUrl !== undefined) {
-    payload.banner_url = data.bannerUrl;
-    payload.bannerUrl = data.bannerUrl;
-  }
-  if (data.trailerUrl !== undefined) {
-    payload.trailer_url = data.trailerUrl;
-    payload.trailerUrl = data.trailerUrl;
-  }
-  if (data.trapDownloadUrl !== undefined) {
-    payload.trap_download_url = data.trapDownloadUrl;
-    payload.trapDownloadUrl = data.trapDownloadUrl;
-  }
-  if (data.realDownloadUrl !== undefined) {
-    payload.real_download_url = data.realDownloadUrl;
-    payload.realDownloadUrl = data.realDownloadUrl;
-  }
+  if (data.trapDownloadUrl !== undefined) payload.trap_download_url = data.trapDownloadUrl;
   if (data.servers !== undefined) payload.servers = data.servers;
   if (data.synopsis !== undefined) payload.synopsis = data.synopsis;
   if (data.views !== undefined) payload.views = Number(data.views);
   if (data.status !== undefined) payload.status = data.status;
-  if (data.seoTitle !== undefined) {
-    payload.seo_title = data.seoTitle;
-    payload.seoTitle = data.seoTitle;
-  }
-  if (data.seoDescription !== undefined) {
-    payload.seo_description = data.seoDescription;
-    payload.seoDescription = data.seoDescription;
-  }
-  if (data.seoKeywords !== undefined) {
-    payload.seo_keywords = data.seoKeywords;
-    payload.seoKeywords = data.seoKeywords;
-  }
+  if (data.seoTitle !== undefined) payload.seo_title = data.seoTitle;
+  if (data.seoDescription !== undefined) payload.seo_description = data.seoDescription;
+  if (data.seoKeywords !== undefined) payload.seo_keywords = data.seoKeywords;
 
   payload.updated_at = now;
-  payload.updatedAt = now;
 
   return payload;
 }
@@ -317,6 +300,22 @@ export async function getRelatedMovies(movie: Movie, limitCount: number = 4): Pr
   }
 }
 
+async function withTimeout<T>(
+  promise: PromiseLike<T>,
+  timeoutMs = 20000,
+  errorMsg = "Koneksi ke Supabase melebihi batas waktu (timeout). Silakan periksa koneksi internet Anda."
+): Promise<T> {
+  let timer: NodeJS.Timeout;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(errorMsg)), timeoutMs);
+  });
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    clearTimeout(timer!);
+  }
+}
+
 /**
  * Create a movie in Supabase with strict category validation
  */
@@ -331,25 +330,38 @@ export async function createMovie(data: Omit<Movie, "id">): Promise<{ movie?: Mo
       ...mapMovieToDb(data),
       views: data.views || 0,
       created_at: now,
-      createdAt: now,
     };
 
-    const { data: inserted, error } = await supabase
+    const insertQuery = supabase
       .from("movies")
       .insert(payload)
       .select()
-      .single();
+      .maybeSingle();
+
+    const { data: inserted, error } = await withTimeout(
+      insertQuery,
+      20000,
+      "Gagal menyimpan: Waktu koneksi ke database habis (timeout). Silakan coba lagi."
+    );
 
     if (error) {
       console.error("Error creating movie:", error);
       return { error: error.message };
     }
 
-    const createdMovie = mapMovieFromDb(inserted);
+    // Map inserted row, or fallback to synthesized movie object from payload if select was empty
+    const createdMovie = inserted
+      ? mapMovieFromDb(inserted)
+      : mapMovieFromDb({ ...payload, id: (inserted as any)?.id || crypto.randomUUID() });
+
     if (!createdMovie) {
       return { error: "Data film yang tersimpan tidak valid atau memiliki kategori tidak sah" };
     }
-    await revalidateContent("movie", createdMovie.category, createdMovie.slug).catch(() => {});
+
+    // Non-blocking revalidation
+    withTimeout(revalidateContent("movie", createdMovie.category, createdMovie.slug), 5000).catch((err) => {
+      console.warn("Revalidation warning:", err);
+    });
 
     return { movie: createdMovie };
   } catch (err) {
@@ -372,23 +384,36 @@ export async function updateMovie(
 
     const payload = mapMovieToDb(data);
 
-    const { data: updated, error } = await supabase
+    const updateQuery = supabase
       .from("movies")
       .update(payload)
       .eq("id", id)
       .select()
-      .single();
+      .maybeSingle();
+
+    const { data: updated, error } = await withTimeout(
+      updateQuery,
+      20000,
+      "Gagal memperbarui: Waktu koneksi ke database habis (timeout). Silakan coba lagi."
+    );
 
     if (error) {
       console.error("Error updating movie:", error);
       return { error: error.message };
     }
 
-    const updatedMovie = mapMovieFromDb(updated);
+    const updatedMovie = updated
+      ? mapMovieFromDb(updated)
+      : mapMovieFromDb({ ...payload, id, category: data.category || "Anime" });
+
     if (!updatedMovie) {
       return { error: "Data film yang diperbarui tidak valid atau memiliki kategori tidak sah" };
     }
-    await revalidateContent("movie", updatedMovie.category, updatedMovie.slug).catch(() => {});
+
+    // Non-blocking revalidation
+    withTimeout(revalidateContent("movie", updatedMovie.category, updatedMovie.slug), 5000).catch((err) => {
+      console.warn("Revalidation warning:", err);
+    });
 
     return { movie: updatedMovie };
   } catch (err) {
