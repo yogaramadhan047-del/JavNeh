@@ -44,6 +44,17 @@ export function AdvertisementProvider({
       .channel("public-ad-settings-changes")
       .on(
         "postgres_changes",
+        { event: "*", schema: "public", table: "advertisements" },
+        () => {
+          getAdSettings("advertisement").then((data) => {
+            if (isMounted) {
+              setSettings(data);
+            }
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
         { event: "*", schema: "public", table: "settings" },
         () => {
           getAdSettings("advertisement").then((data) => {

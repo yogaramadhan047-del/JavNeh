@@ -65,3 +65,16 @@ export async function revalidateContent(
   }
 }
 
+/**
+ * Server action to invalidate cache when site or advertisement settings are updated
+ */
+export async function revalidateSettings() {
+  try {
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (err) {
+    console.error("revalidateSettings error:", err);
+    return { success: false, error: String(err) };
+  }
+}
+

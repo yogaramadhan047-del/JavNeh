@@ -294,7 +294,7 @@ export function ContentPlayer(props: ContentPlayerProps) {
             <p className="font-semibold text-white">Tips Pemutaran Video:</p>
             <p>
               Jika video tidak berputar atau muncul layar hitam, server pihak ketiga mungkin membatasi iframe embedding (X-Frame-Options). Silakan coba beralih ke server streaming lain atau gunakan tombol{" "}
-              <strong className="text-white">"Buka Player di Tab Baru"</strong> di sudut kanan atas pemutar video.
+              <strong className="text-white">&quot;Buka Player di Tab Baru&quot;</strong> di sudut kanan atas pemutar video.
             </p>
           </div>
         </div>

@@ -119,6 +119,11 @@ export default async function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" disableTransitionOnChange>
           <AdvertisementProvider initialSettings={adSettings}>
+            {siteSettings?.bannerActive && siteSettings?.bannerText && (
+              <div className="w-full bg-primary-blue text-white px-4 py-2 text-center text-sm font-medium transition-all shadow-sm">
+                <span>{siteSettings.bannerText}</span>
+              </div>
+            )}
             <Navbar />
             <AntiAdBlock />
             <main className="flex-1 flex flex-col">

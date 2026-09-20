@@ -6,6 +6,7 @@ import { Loader2, Save, RefreshCw, BadgeDollarSign, CheckCircle, XCircle } from 
 import { AdvertisementSettings } from "@/types/advertisement";
 import { getAdSettings, saveAdSettings, DEFAULT_AD_SETTINGS } from "@/lib/settings";
 import { supabase } from "@/lib/supabase";
+import { revalidateSettings } from "@/app/actions/revalidate";
 
 export default function AdminAdvertisementPage() {
   const [settings, setSettings] = useState<AdvertisementSettings>(DEFAULT_AD_SETTINGS);
@@ -45,6 +46,18 @@ export default function AdminAdvertisementPage() {
       .channel("admin-ad-settings-changes")
       .on(
         "postgres_changes",
+        { event: "*", schema: "public", table: "advertisements" },
+        () => {
+          getAdSettings("advertisement").then((data) => {
+            if (isMounted) {
+              setSettings(data);
+              setInitialSettings(data);
+            }
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
         { event: "*", schema: "public", table: "settings" },
         () => {
           getAdSettings("advertisement").then((data) => {
@@ -73,6 +86,7 @@ export default function AdminAdvertisementPage() {
         throw new Error(error || "Gagal menyimpan pengaturan iklan");
       }
 
+      await revalidateSettings();
       setInitialSettings(settings);
       showToast("Pengaturan iklan berhasil disimpan", "success");
     } catch (error: unknown) {

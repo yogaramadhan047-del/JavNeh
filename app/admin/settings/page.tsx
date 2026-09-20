@@ -7,6 +7,7 @@ import { SiteSettings } from "@/types/settings";
 import { FaviconUpload } from "./components/favicon-upload";
 import { getSiteSettings, saveSiteSettings, DEFAULT_SITE_SETTINGS } from "@/lib/settings";
 import { supabase } from "@/lib/supabase";
+import { revalidateSettings } from "@/app/actions/revalidate";
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
@@ -77,6 +78,7 @@ export default function AdminSettingsPage() {
         throw new Error(error || "Gagal menyimpan pengaturan");
       }
 
+      await revalidateSettings();
       setInitialSettings(settings);
       showToast("Pengaturan berhasil disimpan", "success");
     } catch (error: unknown) {
@@ -261,6 +263,40 @@ export default function AdminSettingsPage() {
                 className="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-primary-blue outline-none"
               />
             </div>
+          </div>
+        </div>
+
+        {/* Announcement Banner */}
+        <div className="bg-card-dark border border-border-dark p-6 rounded-xl space-y-6">
+          <div className="flex items-center justify-between border-b border-border-dark pb-4">
+            <div>
+              <h2 className="text-xl font-bold text-white">Announcement Banner</h2>
+              <p className="text-sm text-gray-400 mt-0.5">Show a top announcement bar across the website.</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                name="bannerActive"
+                checked={settings.bannerActive}
+                onChange={handleChange}
+                disabled={isFormDisabled}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-border-dark peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-blue"></div>
+            </label>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1.5">Banner Message</label>
+            <textarea
+              name="bannerText"
+              value={settings.bannerText}
+              onChange={handleChange}
+              disabled={isFormDisabled}
+              rows={2}
+              placeholder="e.g. Website sedang dalam pemeliharaan server ringan atau pengumuman penting..."
+              className="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-primary-blue outline-none text-sm"
+            />
           </div>
         </div>
       </form>
