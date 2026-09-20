@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { Movie, MovieServer, ContentCategory } from "@/types/movie";
 import { revalidateContent } from "@/app/actions/revalidate";
+import { normalizeEmbedUrl } from "@/lib/embed";
 
 function parseJsonArray<T>(val: unknown): T[] {
   if (Array.isArray(val)) return val as T[];
@@ -30,7 +31,16 @@ export function mapMovieFromDb(row: Record<string, unknown> | null | undefined):
   }
   const category: ContentCategory = rawCategory;
 
-  const servers = parseJsonArray<MovieServer>(row.servers);
+  const rawServers = parseJsonArray<MovieServer>(row.servers);
+  const servers: MovieServer[] = rawServers.map((s, idx) => {
+    const rawUrl = s.url || s.embedUrl || "";
+    const cleanUrl = normalizeEmbedUrl(rawUrl);
+    return {
+      ...s,
+      url: cleanUrl,
+      embedUrl: cleanUrl,
+    };
+  });
   const genres = parseJsonArray<string>(row.genres);
   const tags = parseJsonArray<string>(row.tags);
 
@@ -113,7 +123,17 @@ export function mapMovieToDb(data: Partial<Movie>) {
     payload.real_download_url = resolvedDownload;
   }
   if (data.trapDownloadUrl !== undefined) payload.trap_download_url = data.trapDownloadUrl;
-  if (data.servers !== undefined) payload.servers = data.servers;
+  if (data.servers !== undefined) {
+    payload.servers = data.servers.map((s) => {
+      const rawUrl = s.url || s.embedUrl || "";
+      const cleanUrl = normalizeEmbedUrl(rawUrl);
+      return {
+        ...s,
+        url: cleanUrl,
+        embedUrl: cleanUrl,
+      };
+    });
+  }
   if (data.synopsis !== undefined) payload.synopsis = data.synopsis;
   if (data.views !== undefined) payload.views = Number(data.views);
   if (data.status !== undefined) payload.status = data.status;

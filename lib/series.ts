@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { Series, Episode, ContentCategory } from "@/types/series";
 import { revalidateContent } from "@/app/actions/revalidate";
+import { normalizeEmbedUrl } from "@/lib/embed";
 
 function parseJsonArray<T>(val: unknown): T[] {
   if (Array.isArray(val)) return val as T[];
@@ -30,7 +31,14 @@ export function mapSeriesFromDb(row: Record<string, unknown> | null | undefined)
   }
   const category: ContentCategory = rawCategory;
 
-  const episodes = parseJsonArray<Episode>(row.episodes);
+  const rawEpisodes = parseJsonArray<Episode>(row.episodes);
+  const episodes: Episode[] = rawEpisodes.map((ep) => ({
+    ...ep,
+    servers: (ep.servers || []).map((s) => ({
+      ...s,
+      url: normalizeEmbedUrl(s.url),
+    })),
+  }));
   const genres = parseJsonArray<string>(row.genres);
   const tags = parseJsonArray<string>(row.tags);
 
@@ -115,7 +123,15 @@ export function mapSeriesToDb(data: Partial<Series>) {
     payload.real_download_url = resolvedDownload;
   }
   if (data.trapDownloadUrl !== undefined) payload.trap_download_url = data.trapDownloadUrl;
-  if (data.episodes !== undefined) payload.episodes = data.episodes;
+  if (data.episodes !== undefined) {
+    payload.episodes = data.episodes.map((ep) => ({
+      ...ep,
+      servers: (ep.servers || []).map((s) => ({
+        ...s,
+        url: normalizeEmbedUrl(s.url),
+      })),
+    }));
+  }
   if (data.totalSeasons !== undefined) payload.total_seasons = Number(data.totalSeasons);
   if (data.totalEpisodes !== undefined) payload.total_episodes = Number(data.totalEpisodes);
   if (data.status !== undefined) payload.status = data.status;
