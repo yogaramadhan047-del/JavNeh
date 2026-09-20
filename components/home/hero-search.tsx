@@ -66,9 +66,9 @@ export function HeroSearch() {
     <section className="relative py-8 lg:py-14 w-full flex flex-col items-center justify-center z-10">
       <div className="relative max-w-4xl mx-auto px-4 text-center z-10 flex flex-col items-center w-full">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-text-main">
-          Mau nonton apa lu hari ini?{" "}
+          Udah siap becek belum?{" "}
           <span className="text-primary-blue block mt-2 text-3xl md:text-4xl">
-            Pilih sendiri, kaga usah REPOT!
+            Prepare some tissues first, okay?
           </span>
         </h1>
 
