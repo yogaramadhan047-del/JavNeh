@@ -18,6 +18,7 @@ import { getArticles } from "@/lib/articles";
 import { getMovies } from "@/lib/movies";
 import { getSeriesList } from "@/lib/series";
 import { getHotCarouselItems } from "@/lib/carousel";
+import { HeaderBanners } from "@/components/ads/placements";
 
 export const metadata: Metadata = {
   title: "XStream21 - Nonton Anime & Drama Jepang Sub Indo",
@@ -304,6 +305,11 @@ export default function Home() {
         <div className="relative z-10 w-full flex-1 flex flex-col">
           {/* 2. Search Section */}
           <HeroSearch />
+
+          {/* Header Banners 1 & 2 */}
+          <div className="w-full max-w-7xl mx-auto px-4">
+            <HeaderBanners className="!my-2" />
+          </div>
 
           <div className="w-full max-w-7xl mx-auto px-4 pb-14 pt-4 space-y-12">
             {/* 3. Anime (4 latest items) */}

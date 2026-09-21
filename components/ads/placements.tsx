@@ -1,9 +1,13 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { RawAdUnit } from "./raw-ad-unit";
 import { IframeAdUnit } from "./iframe-ad-unit";
 
 export function HeaderBanners({ className = "" }: { className?: string }) {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <div className={`w-full flex flex-col xl:flex-row items-center justify-center gap-4 my-6 ${className}`}>
       <IframeAdUnit placementKey="headerBanner1" />
@@ -13,6 +17,9 @@ export function HeaderBanners({ className = "" }: { className?: string }) {
 }
 
 export function FooterBanners({ className = "" }: { className?: string }) {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <div className={`w-full bg-background-dark/30 border-t border-border-dark py-6 my-8 flex flex-col xl:flex-row items-center justify-center gap-4 ${className}`}>
       <IframeAdUnit placementKey="footerBanner1" />
@@ -22,6 +29,9 @@ export function FooterBanners({ className = "" }: { className?: string }) {
 }
 
 export function MovieDetailBanner({ className = "" }: { className?: string }) {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <div className={`w-full flex justify-center my-6 ${className}`}>
       <IframeAdUnit placementKey="movieDetailBanner" />
@@ -30,10 +40,16 @@ export function MovieDetailBanner({ className = "" }: { className?: string }) {
 }
 
 export function InArticleBanner({ className = "" }: { className?: string }) {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
+
   return <RawAdUnit placementKey="articleBanner" className={className} />;
 }
 
 export function ArticleDetailBanner({ className = "" }: { className?: string }) {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
+
   return <RawAdUnit placementKey="articleBanner" className={className} />;
 }
 
@@ -46,6 +62,9 @@ export function SidebarBanner({
   desktopOnly?: boolean;
   className?: string;
 }) {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <RawAdUnit
       placementKey="sidebarBanner"

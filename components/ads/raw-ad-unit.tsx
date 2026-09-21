@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useAdvertisement } from "@/components/providers/advertisement-provider";
 import { AdvertisementSettings } from "@/types/advertisement";
 
@@ -17,11 +18,13 @@ export function RawAdUnit({
   desktopOnly = false,
   className = "",
 }: RawAdUnitProps) {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
   const { settings, loading } = useAdvertisement();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (loading || !settings?.adsEnabled) return;
+    if (isAdmin || loading || !settings?.adsEnabled) return;
     const rawHtml = settings[placementKey] as string;
     if (!rawHtml || settings.testMode) return;
     if (containerRef.current) {
@@ -33,7 +36,9 @@ export function RawAdUnit({
         console.error("Failed to inject ad script:", e);
       }
     }
-  }, [settings, loading, placementKey]);
+  }, [settings, loading, placementKey, isAdmin]);
+
+  if (isAdmin) return null;
 
   let visibilityClass = "";
   if (mobileOnly) visibilityClass = "block md:hidden";

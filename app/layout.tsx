@@ -6,9 +6,12 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { FooterBanners } from "@/components/ads/placements";
 import { AntiAdBlock } from "@/components/ads/anti-adblock";
+import { HeaderAdScripts } from "@/components/ads/header-ad-scripts";
 import { AdvertisementProvider } from "@/components/providers/advertisement-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { getSiteSettings, getAdSettings } from "@/lib/settings";
+
+export const dynamic = "force-dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -91,34 +94,12 @@ export default async function RootLayout({
 
   return (
     <html lang="id" className="dark" style={{ colorScheme: "dark" }} suppressHydrationWarning>
-      <head>
-        {adSettings?.adsEnabled && adSettings?.popunderScript && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: adSettings.popunderScript.replace(/<script[^>]*>/i, "").replace(/<\/script>/i, ""),
-            }}
-          />
-        )}
-        {adSettings?.adsEnabled && adSettings?.socialBarScript && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: adSettings.socialBarScript.replace(/<script[^>]*>/i, "").replace(/<\/script>/i, ""),
-            }}
-          />
-        )}
-        {adSettings?.adsEnabled && adSettings?.inPagePushScript && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: adSettings.inPagePushScript.replace(/<script[^>]*>/i, "").replace(/<\/script>/i, ""),
-            }}
-          />
-        )}
-      </head>
       <body
         className={`${inter.className} bg-background-dark text-text-main min-h-screen flex flex-col transition-colors duration-300 overflow-x-hidden`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" disableTransitionOnChange>
           <AdvertisementProvider initialSettings={adSettings}>
+            <HeaderAdScripts />
             {siteSettings?.bannerActive && siteSettings?.bannerText && (
               <div className="w-full bg-primary-blue text-white px-4 py-2 text-center text-sm font-medium transition-all shadow-sm">
                 <span>{siteSettings.bannerText}</span>

@@ -14,9 +14,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let dramaMovieEntries: MetadataRoute.Sitemap = [];
   let dramaSeriesEntries: MetadataRoute.Sitemap = [];
 
+  // Fetch all 5 content sets concurrently to maximize performance and avoid cold-start timeouts
+  let publishedArticles: Awaited<ReturnType<typeof getArticles>> = [];
+  let publishedAnimeMovies: Awaited<ReturnType<typeof getMovies>> = [];
+  let publishedDramaMovies: Awaited<ReturnType<typeof getMovies>> = [];
+  let publishedAnimeSeries: Awaited<ReturnType<typeof getSeriesList>> = [];
+  let publishedDramaSeries: Awaited<ReturnType<typeof getSeriesList>> = [];
+
+  try {
+    const [articles, animeMovies, dramaMovies, animeSeries, dramaSeries] = await Promise.all([
+      getArticles({ status: "Published" }).catch((err) => {
+        console.error("Error fetching articles for sitemap:", err);
+        return [];
+      }),
+      getMovies({ status: "Published", category: "Anime" }).catch((err) => {
+        console.error("Error fetching anime movies for sitemap:", err);
+        return [];
+      }),
+      getMovies({ status: "Published", category: "Drama Jepang" }).catch((err) => {
+        console.error("Error fetching drama movies for sitemap:", err);
+        return [];
+      }),
+      getSeriesList({ status: "Published", category: "Anime" }).catch((err) => {
+        console.error("Error fetching anime series for sitemap:", err);
+        return [];
+      }),
+      getSeriesList({ status: "Published", category: "Drama Jepang" }).catch((err) => {
+        console.error("Error fetching drama series for sitemap:", err);
+        return [];
+      }),
+    ]);
+
+    publishedArticles = articles || [];
+    publishedAnimeMovies = animeMovies || [];
+    publishedDramaMovies = dramaMovies || [];
+    publishedAnimeSeries = animeSeries || [];
+    publishedDramaSeries = dramaSeries || [];
+  } catch (error) {
+    console.error("Error running concurrent sitemap queries:", error);
+  }
+
   // 1. Articles - Strictly Published only
   try {
-    const publishedArticles = await getArticles({ status: "Published" });
     articleEntries = (publishedArticles || [])
       .filter((article) => article.status === "Published" && (article.slug || article.id))
       .map((article) => {
@@ -35,12 +74,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         };
       });
   } catch (error) {
-    console.error("Error fetching articles for sitemap:", error);
+    console.error("Error formatting articles for sitemap:", error);
   }
 
   // 2. Movies (Anime & Drama Jepang) - Strictly Published only
   try {
-    const publishedAnimeMovies = await getMovies({ status: "Published", category: "Anime" });
     animeMovieEntries = (publishedAnimeMovies || [])
       .filter((m) => m.status === "Published" && (m.slug || m.id))
       .map((movie) => {
@@ -59,7 +97,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         };
       });
 
-    const publishedDramaMovies = await getMovies({ status: "Published", category: "Drama Jepang" });
     dramaMovieEntries = (publishedDramaMovies || [])
       .filter((m) => m.status === "Published" && (m.slug || m.id))
       .map((movie) => {
@@ -78,12 +115,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         };
       });
   } catch (error) {
-    console.error("Error fetching movies for sitemap:", error);
+    console.error("Error formatting movies for sitemap:", error);
   }
 
   // 3. Series (Anime & Drama Jepang) - Strictly Published only
   try {
-    const publishedAnimeSeries = await getSeriesList({ status: "Published", category: "Anime" });
     animeSeriesEntries = (publishedAnimeSeries || [])
       .filter((s) => s.status === "Published" && (s.slug || s.id))
       .map((series) => {
@@ -102,7 +138,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         };
       });
 
-    const publishedDramaSeries = await getSeriesList({ status: "Published", category: "Drama Jepang" });
     dramaSeriesEntries = (publishedDramaSeries || [])
       .filter((s) => s.status === "Published" && (s.slug || s.id))
       .map((series) => {
@@ -121,7 +156,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         };
       });
   } catch (error) {
-    console.error("Error fetching series for sitemap:", error);
+    console.error("Error formatting series for sitemap:", error);
   }
 
   // Static core routes

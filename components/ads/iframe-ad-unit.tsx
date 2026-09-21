@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useAdvertisement } from "@/components/providers/advertisement-provider";
 import { AdvertisementSettings } from "@/types/advertisement";
 
@@ -16,7 +17,11 @@ export function IframeAdUnit({
   width = 728,
   height = 90,
 }: IframeAdUnitProps) {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
   const { settings, loading } = useAdvertisement();
+
+  if (isAdmin) return null;
 
   if (loading) {
     return (
