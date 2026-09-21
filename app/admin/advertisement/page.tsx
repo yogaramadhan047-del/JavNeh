@@ -215,13 +215,13 @@ export default function AdminAdvertisementPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1.5">Popunder Script Code</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1.5">Popunder Script Code (Adsterra Anti-AdBlock)</label>
               <textarea
                 name="popunderScript"
                 value={settings.popunderScript}
                 onChange={handleChange}
                 rows={3}
-                placeholder="<!-- Paste Popunder script here -->"
+                placeholder="<script src=&quot;https://cowardrainbowactual.com/f0/9b/f6/f09bf6d358c6da2677e46c32a14ee25c.js&quot;></script>"
                 className="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-2.5 text-white font-mono text-xs focus:ring-2 focus:ring-primary-blue outline-none"
               />
             </div>

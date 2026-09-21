@@ -14,10 +14,14 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   bannerActive: false,
 };
 
+export const OFFICIAL_ADSTERRA_POPUNDER_URL =
+  "https://cowardrainbowactual.com/f0/9b/f6/f09bf6d358c6da2677e46c32a14ee25c.js";
+export const OFFICIAL_ADSTERRA_POPUNDER_SCRIPT = `<script src="${OFFICIAL_ADSTERRA_POPUNDER_URL}"></script>`;
+
 export const DEFAULT_AD_SETTINGS: AdvertisementSettings = {
   adsEnabled: true,
   testMode: false,
-  popunderScript: "",
+  popunderScript: OFFICIAL_ADSTERRA_POPUNDER_SCRIPT,
   socialBarScript: "",
   inPagePushScript: "",
   smartlinkUrl: "",
@@ -120,10 +124,11 @@ export function mapAdSettingsFromDb(row: Record<string, unknown> | null | undefi
   // If stored in JSON `value`
   if (row.value && typeof row.value === "object" && !Array.isArray(row.value)) {
     const val = row.value as Record<string, unknown>;
+    const rawPopunder = (val.popunderScript as string) ?? (val.popunder_script as string) ?? "";
     return {
       adsEnabled: Boolean(val.adsEnabled ?? val.ads_enabled ?? true),
       testMode: Boolean(val.testMode ?? val.test_mode ?? false),
-      popunderScript: (val.popunderScript as string) ?? (val.popunder_script as string) ?? "",
+      popunderScript: rawPopunder.trim() ? rawPopunder : OFFICIAL_ADSTERRA_POPUNDER_SCRIPT,
       socialBarScript: (val.socialBarScript as string) ?? (val.social_bar_script as string) ?? "",
       inPagePushScript: (val.inPagePushScript as string) ?? (val.in_page_push_script as string) ?? "",
       smartlinkUrl: (val.smartlinkUrl as string) ?? (val.smartlink_url as string) ?? "",
@@ -138,10 +143,11 @@ export function mapAdSettingsFromDb(row: Record<string, unknown> | null | undefi
     };
   }
 
+  const rawPopunder = (row.popunder_script as string) ?? (row.popunderScript as string) ?? "";
   return {
     adsEnabled: Boolean(row.ads_enabled ?? row.adsEnabled ?? true),
     testMode: Boolean(row.test_mode ?? row.testMode ?? false),
-    popunderScript: (row.popunder_script as string) ?? (row.popunderScript as string) ?? "",
+    popunderScript: rawPopunder.trim() ? rawPopunder : OFFICIAL_ADSTERRA_POPUNDER_SCRIPT,
     socialBarScript: (row.social_bar_script as string) ?? (row.socialBarScript as string) ?? "",
     inPagePushScript: (row.in_page_push_script as string) ?? (row.inPagePushScript as string) ?? "",
     smartlinkUrl: (row.smartlink_url as string) ?? (row.smartlinkUrl as string) ?? "",
