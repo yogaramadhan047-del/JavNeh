@@ -51,13 +51,13 @@ export const metadata: Metadata = {
 };
 
 /**
- * Fetch exactly 4 latest Anime items using strict category filter
+ * Fetch up to 6 latest Anime items using strict category filter
  */
 async function getRecentAnime() {
   try {
     const [movies, series] = await Promise.all([
-      getMovies({ status: "Published", category: "Anime", limit: 4 }).catch(() => []),
-      getSeriesList({ status: "Published", category: "Anime", limit: 4 }).catch(() => []),
+      getMovies({ status: "Published", category: "Anime", limit: 6 }).catch(() => []),
+      getSeriesList({ status: "Published", category: "Anime", limit: 6 }).catch(() => []),
     ]);
 
     const combined = [
@@ -69,7 +69,7 @@ async function getRecentAnime() {
       (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
     );
 
-    return combined.slice(0, 4);
+    return combined.slice(0, 6);
   } catch (error) {
     console.error("Error fetching anime:", error);
     return [];
@@ -77,13 +77,13 @@ async function getRecentAnime() {
 }
 
 /**
- * Fetch exactly 4 latest Drama Jepang items using strict category filter
+ * Fetch up to 6 latest Drama Jepang items using strict category filter
  */
 async function getRecentDrama() {
   try {
     const [seriesList, movies] = await Promise.all([
-      getSeriesList({ status: "Published", category: "Drama Jepang", limit: 4 }).catch(() => []),
-      getMovies({ status: "Published", category: "Drama Jepang", limit: 4 }).catch(() => []),
+      getSeriesList({ status: "Published", category: "Drama Jepang", limit: 6 }).catch(() => []),
+      getMovies({ status: "Published", category: "Drama Jepang", limit: 6 }).catch(() => []),
     ]);
 
     const combined = [
@@ -95,7 +95,7 @@ async function getRecentDrama() {
       (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
     );
 
-    return combined.slice(0, 4);
+    return combined.slice(0, 6);
   } catch (error) {
     console.error("Error fetching drama:", error);
     return [];
@@ -103,11 +103,11 @@ async function getRecentDrama() {
 }
 
 /**
- * Fetch exactly 4 latest Articles
+ * Fetch up to 6 latest Articles
  */
 async function getRecentArticles(): Promise<Article[]> {
   try {
-    return await getArticles({ status: "Published", limit: 4 });
+    return await getArticles({ status: "Published", limit: 6 });
   } catch (error) {
     console.error("Error fetching articles:", error);
     return [];
@@ -116,9 +116,11 @@ async function getRecentArticles(): Promise<Article[]> {
 
 function MovieGridSkeleton() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {[...Array(4)].map((_, i) => (
-        <MovieCardSkeleton key={i} />
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className={i >= 4 ? "hidden md:block" : "block"}>
+          <MovieCardSkeleton />
+        </div>
       ))}
     </div>
   );
@@ -126,9 +128,14 @@ function MovieGridSkeleton() {
 
 function ArticleGridSkeleton() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {[...Array(4)].map((_, i) => (
-        <div key={i} className="block bg-card-dark rounded-xl overflow-hidden border border-border-dark animate-pulse">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className={`bg-card-dark rounded-xl overflow-hidden border border-border-dark animate-pulse ${
+            i >= 4 ? "hidden md:block" : "block"
+          }`}
+        >
           <div className="relative aspect-video w-full bg-gray-800/50"></div>
           <div className="p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-2">
@@ -154,9 +161,11 @@ async function AnimeSection() {
     );
   }
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {animeList.map((anime) => (
-        <MovieCard key={anime.id} movie={anime} baseUrl="/anime" />
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {animeList.slice(0, 6).map((anime, index) => (
+        <div key={anime.id} className={index >= 4 ? "hidden md:block" : "block"}>
+          <MovieCard movie={anime} baseUrl="/anime" />
+        </div>
       ))}
     </div>
   );
@@ -172,9 +181,11 @@ async function DramaJepangSection() {
     );
   }
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {dramaList.map((item) => (
-        <MovieCard key={item.id} movie={item} baseUrl="/drama-jepang" />
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {dramaList.slice(0, 6).map((item, index) => (
+        <div key={item.id} className={index >= 4 ? "hidden md:block" : "block"}>
+          <MovieCard movie={item} baseUrl="/drama-jepang" />
+        </div>
       ))}
     </div>
   );
@@ -190,46 +201,47 @@ async function ArticlesSection() {
     );
   }
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {articles.slice(0, 4).map((article) => (
-        <Link
-          prefetch={false}
-          key={article.id}
-          href={`/artikel/${article.slug || article.id}`}
-          className="group flex flex-col bg-card-dark rounded-xl overflow-hidden border border-border-dark hover:border-primary-blue transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-blue/20"
-        >
-          <div className="relative aspect-video w-full overflow-hidden bg-gray-900/50 shrink-0">
-            <SafeImage
-              src={article.thumbnailUrl || ""}
-              alt={article.title}
-              type="thumbnail"
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105 group-hover:brightness-75"
-              referrerPolicy="no-referrer"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            />
-          </div>
-          <div className="p-3 sm:p-4 flex flex-col justify-between flex-1">
-            <div>
-              <div className="flex items-center gap-2 text-[10px] sm:text-xs text-text-muted mb-1.5">
-                <span className="text-primary-blue font-medium">{article.category}</span>
-                <span>•</span>
-                <span>
-                  {article.publishedAt
-                    ? new Date(
-                        typeof (article.publishedAt as { toMillis?: () => number })?.toMillis === "function"
-                          ? (article.publishedAt as { toMillis: () => number }).toMillis()
-                          : (article.publishedAt as string | number)
-                      ).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
-                    : ""}
-                </span>
-              </div>
-              <h3 className="font-semibold text-xs sm:text-sm text-text-main group-hover:text-primary-blue transition-colors line-clamp-2">
-                {article.title}
-              </h3>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {articles.slice(0, 6).map((article, index) => (
+        <div key={article.id} className={index >= 4 ? "hidden md:block" : "block"}>
+          <Link
+            prefetch={false}
+            href={`/artikel/${article.slug || article.id}`}
+            className="group flex flex-col h-full bg-card-dark rounded-xl overflow-hidden border border-border-dark hover:border-primary-blue transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-blue/20"
+          >
+            <div className="relative aspect-video w-full overflow-hidden bg-gray-900/50 shrink-0">
+              <SafeImage
+                src={article.thumbnailUrl || ""}
+                alt={article.title}
+                type="thumbnail"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105 group-hover:brightness-75"
+                referrerPolicy="no-referrer"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 33vw"
+              />
             </div>
-          </div>
-        </Link>
+            <div className="p-3 sm:p-4 flex flex-col justify-between flex-1">
+              <div>
+                <div className="flex items-center gap-2 text-[10px] sm:text-xs text-text-muted mb-1.5">
+                  <span className="text-primary-blue font-medium">{article.category}</span>
+                  <span>•</span>
+                  <span>
+                    {article.publishedAt
+                      ? new Date(
+                          typeof (article.publishedAt as { toMillis?: () => number })?.toMillis === "function"
+                            ? (article.publishedAt as { toMillis: () => number }).toMillis()
+                            : (article.publishedAt as string | number)
+                        ).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
+                      : ""}
+                  </span>
+                </div>
+                <h3 className="font-semibold text-xs sm:text-sm text-text-main group-hover:text-primary-blue transition-colors line-clamp-2">
+                  {article.title}
+                </h3>
+              </div>
+            </div>
+          </Link>
+        </div>
       ))}
     </div>
   );
@@ -312,7 +324,7 @@ export default function Home() {
           </div>
 
           <div className="w-full max-w-7xl mx-auto px-4 pb-14 pt-4 space-y-12">
-            {/* 3. Anime (4 latest items) */}
+            {/* 3. Anime (4 on mobile, 6 on tablet & desktop) */}
             <section>
               <SectionHeader title="Anime Terbaru" href="/anime" />
               <Suspense fallback={<MovieGridSkeleton />}>
@@ -320,7 +332,7 @@ export default function Home() {
               </Suspense>
             </section>
 
-            {/* 4. Drama Jepang (4 latest items) */}
+            {/* 4. Drama Jepang (4 on mobile, 6 on tablet & desktop) */}
             <section>
               <SectionHeader title="Drama Jepang Terbaru" href="/drama-jepang" />
               <Suspense fallback={<MovieGridSkeleton />}>
@@ -328,7 +340,7 @@ export default function Home() {
               </Suspense>
             </section>
 
-            {/* 5. Artikel (4 latest items) */}
+            {/* 5. Artikel (4 on mobile, 6 on tablet & desktop) */}
             <section>
               <SectionHeader title="Artikel Terbaru" href="/artikel" />
               <Suspense fallback={<ArticleGridSkeleton />}>
