@@ -48,40 +48,52 @@ export default async function DramaJepangPage({
 
   // Fetch genres and strictly filtered Drama Jepang (maximum 10 items)
   // Query Supabase with .eq('category', 'Drama Jepang'). Anime MUST NOT appear here.
-  const [genres, seriesList, movieList] = await Promise.all([
+  const [genres, dramaMovies, dramaSeries] = await Promise.all([
     getGenres(),
-    getSeriesList({ status: "Published", category: "Drama Jepang", limit: 10 }).catch(() => []),
-    getMovies({ genre, status: "Published", category: "Drama Jepang", limit: 10 }).catch(() => []),
+    getMovies({ genre, status: "Published", category: "Drama Jepang", limit: 20 }).catch(() => []),
+    getSeriesList({ genre, status: "Published", category: "Drama Jepang", limit: 20 }).catch(() => []),
   ]);
 
   // Combine drama series and movies, strictly enforcing category 'Drama Jepang'
   const combined = [
-    ...seriesList.map((s) => ({ ...s, isSeries: true })),
-    ...movieList.map((m) => ({ ...m, isSeries: false })),
+    ...dramaMovies.map((m) => ({
+      ...m,
+      isSeries: false,
+      type: "movie" as const,
+      poster_url: m.posterUrl,
+      banner_url: m.bannerUrl,
+    })),
+    ...dramaSeries.map((s) => ({
+      ...s,
+      isSeries: true,
+      type: "series" as const,
+      poster_url: s.posterUrl,
+      banner_url: s.bannerUrl,
+    })),
   ].filter((item) => item.category === "Drama Jepang");
 
-  // De-duplicate by title/slug
+  // De-duplicate by id or slug
   const uniqueItems: typeof combined = [];
-  combined.forEach((item) => {
-    if (!uniqueItems.some((u) => (u.slug && u.slug === item.slug) || u.title.toLowerCase() === item.title.toLowerCase())) {
-      uniqueItems.push(item);
-    }
+  const seenIds = new Set<string>();
+  const seenSlugs = new Set<string>();
+
+  for (const item of combined) {
+    if (seenIds.has(item.id)) continue;
+    if (item.slug && seenSlugs.has(item.slug)) continue;
+    seenIds.add(item.id);
+    if (item.slug) seenSlugs.add(item.slug);
+    uniqueItems.push(item);
+  }
+
+  // Sort by newest createdAt (or updatedAt if present)
+  uniqueItems.sort((a, b) => {
+    const timeA = new Date(a.createdAt || a.updatedAt || 0).getTime();
+    const timeB = new Date(b.createdAt || b.updatedAt || 0).getTime();
+    return timeB - timeA;
   });
 
-  // Apply genre filter if specified
-  const filtered = genre
-    ? uniqueItems.filter((item) =>
-        item.genres?.some((g) => g.toLowerCase() === genre.toLowerCase())
-      )
-    : uniqueItems;
-
-  // Sort by newest createdAt
-  filtered.sort(
-    (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-  );
-
   // Exact maximum of 10 items
-  const displayItems = filtered.slice(0, 10);
+  const displayItems = uniqueItems.slice(0, 10);
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",

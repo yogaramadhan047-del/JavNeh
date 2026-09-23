@@ -50,23 +50,50 @@ export default async function AnimePage({
   // Query Supabase with .eq('category', 'Anime'). Drama Jepang MUST NOT appear here.
   const [genres, animeMovies, animeSeries] = await Promise.all([
     getGenres(),
-    getMovies({ genre, status: "Published", category: "Anime", limit: 10 }),
-    getSeriesList({ status: "Published", category: "Anime", limit: 10 }).catch(() => []),
+    getMovies({ genre, status: "Published", category: "Anime", limit: 20 }).catch(() => []),
+    getSeriesList({ genre, status: "Published", category: "Anime", limit: 20 }).catch(() => []),
   ]);
 
-  // Combine and strictly enforce category filter
+  // Combine, normalize, and strictly enforce category filter
   const combined = [
-    ...animeMovies.map((m) => ({ ...m, isSeries: false })),
-    ...animeSeries.map((s) => ({ ...s, isSeries: true })),
+    ...animeMovies.map((m) => ({
+      ...m,
+      isSeries: false,
+      type: "movie" as const,
+      poster_url: m.posterUrl,
+      banner_url: m.bannerUrl,
+    })),
+    ...animeSeries.map((s) => ({
+      ...s,
+      isSeries: true,
+      type: "series" as const,
+      poster_url: s.posterUrl,
+      banner_url: s.bannerUrl,
+    })),
   ].filter((item) => item.category === "Anime");
 
-  // Sort by newest createdAt
-  combined.sort(
-    (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-  );
+  // Deduplicate by id or slug
+  const uniqueAnime: typeof combined = [];
+  const seenIds = new Set<string>();
+  const seenSlugs = new Set<string>();
+
+  for (const item of combined) {
+    if (seenIds.has(item.id)) continue;
+    if (item.slug && seenSlugs.has(item.slug)) continue;
+    seenIds.add(item.id);
+    if (item.slug) seenSlugs.add(item.slug);
+    uniqueAnime.push(item);
+  }
+
+  // Sort by newest createdAt (or updatedAt if present)
+  uniqueAnime.sort((a, b) => {
+    const timeA = new Date(a.createdAt || a.updatedAt || 0).getTime();
+    const timeB = new Date(b.createdAt || b.updatedAt || 0).getTime();
+    return timeB - timeA;
+  });
 
   // Exact maximum of 10 items
-  const displayAnime = combined.slice(0, 10);
+  const displayAnime = uniqueAnime.slice(0, 10);
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",

@@ -56,20 +56,47 @@ export const metadata: Metadata = {
 async function getRecentAnime() {
   try {
     const [movies, series] = await Promise.all([
-      getMovies({ status: "Published", category: "Anime", limit: 6 }).catch(() => []),
-      getSeriesList({ status: "Published", category: "Anime", limit: 6 }).catch(() => []),
+      getMovies({ status: "Published", category: "Anime", limit: 12 }).catch(() => []),
+      getSeriesList({ status: "Published", category: "Anime", limit: 12 }).catch(() => []),
     ]);
 
     const combined = [
-      ...movies.map((m) => ({ ...m, isSeries: false })),
-      ...series.map((s) => ({ ...s, isSeries: true })),
-    ];
+      ...movies.map((m) => ({
+        ...m,
+        isSeries: false,
+        type: "movie" as const,
+        poster_url: m.posterUrl,
+        banner_url: m.bannerUrl,
+      })),
+      ...series.map((s) => ({
+        ...s,
+        isSeries: true,
+        type: "series" as const,
+        poster_url: s.posterUrl,
+        banner_url: s.bannerUrl,
+      })),
+    ].filter((item) => item.category === "Anime");
 
-    combined.sort(
-      (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-    );
+    // Deduplicate by id or slug
+    const uniqueItems: typeof combined = [];
+    const seenIds = new Set<string>();
+    const seenSlugs = new Set<string>();
 
-    return combined.slice(0, 6);
+    for (const item of combined) {
+      if (seenIds.has(item.id)) continue;
+      if (item.slug && seenSlugs.has(item.slug)) continue;
+      seenIds.add(item.id);
+      if (item.slug) seenSlugs.add(item.slug);
+      uniqueItems.push(item);
+    }
+
+    uniqueItems.sort((a, b) => {
+      const timeA = new Date(a.createdAt || a.updatedAt || 0).getTime();
+      const timeB = new Date(b.createdAt || b.updatedAt || 0).getTime();
+      return timeB - timeA;
+    });
+
+    return uniqueItems.slice(0, 6);
   } catch (error) {
     console.error("Error fetching anime:", error);
     return [];
@@ -81,21 +108,48 @@ async function getRecentAnime() {
  */
 async function getRecentDrama() {
   try {
-    const [seriesList, movies] = await Promise.all([
-      getSeriesList({ status: "Published", category: "Drama Jepang", limit: 6 }).catch(() => []),
-      getMovies({ status: "Published", category: "Drama Jepang", limit: 6 }).catch(() => []),
+    const [movies, seriesList] = await Promise.all([
+      getMovies({ status: "Published", category: "Drama Jepang", limit: 12 }).catch(() => []),
+      getSeriesList({ status: "Published", category: "Drama Jepang", limit: 12 }).catch(() => []),
     ]);
 
     const combined = [
-      ...seriesList.map((s) => ({ ...s, isSeries: true })),
-      ...movies.map((m) => ({ ...m, isSeries: false })),
-    ];
+      ...movies.map((m) => ({
+        ...m,
+        isSeries: false,
+        type: "movie" as const,
+        poster_url: m.posterUrl,
+        banner_url: m.bannerUrl,
+      })),
+      ...seriesList.map((s) => ({
+        ...s,
+        isSeries: true,
+        type: "series" as const,
+        poster_url: s.posterUrl,
+        banner_url: s.bannerUrl,
+      })),
+    ].filter((item) => item.category === "Drama Jepang");
 
-    combined.sort(
-      (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-    );
+    // Deduplicate by id or slug
+    const uniqueItems: typeof combined = [];
+    const seenIds = new Set<string>();
+    const seenSlugs = new Set<string>();
 
-    return combined.slice(0, 6);
+    for (const item of combined) {
+      if (seenIds.has(item.id)) continue;
+      if (item.slug && seenSlugs.has(item.slug)) continue;
+      seenIds.add(item.id);
+      if (item.slug) seenSlugs.add(item.slug);
+      uniqueItems.push(item);
+    }
+
+    uniqueItems.sort((a, b) => {
+      const timeA = new Date(a.createdAt || a.updatedAt || 0).getTime();
+      const timeB = new Date(b.createdAt || b.updatedAt || 0).getTime();
+      return timeB - timeA;
+    });
+
+    return uniqueItems.slice(0, 6);
   } catch (error) {
     console.error("Error fetching drama:", error);
     return [];

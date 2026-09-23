@@ -54,6 +54,9 @@ export interface UnifiedContent {
   totalEpisodes?: number;
   totalSeasons?: number;
   isSeries?: boolean;
+  type?: "movie" | "series";
+  poster_url?: string;
+  banner_url?: string;
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string;

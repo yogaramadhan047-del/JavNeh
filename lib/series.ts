@@ -148,11 +148,14 @@ export function mapSeriesToDb(data: Partial<Series>) {
 
 export interface FetchSeriesOptions {
   category?: ContentCategory | string;
+  genre?: string;
   badge?: string;
   status?: string;
   search?: string;
   limit?: number;
   offset?: number;
+  orderBy?: "createdAt" | "views" | "rating" | "year";
+  ascending?: boolean;
 }
 
 /**
@@ -179,9 +182,19 @@ export async function getSeriesList(options: FetchSeriesOptions = {}): Promise<S
       query = query.or(`title.ilike.%${options.search}%,synopsis.ilike.%${options.search}%`);
     }
 
-    query = query.order("created_at", { ascending: false });
+    const sortField =
+      options.orderBy === "views"
+        ? "views"
+        : options.orderBy === "rating"
+        ? "rating"
+        : options.orderBy === "year"
+        ? "year"
+        : "created_at";
 
-    if (options.limit) {
+    query = query.order(sortField, { ascending: options.ascending ?? false });
+
+    // Note: When genre filter is specified, we fetch and filter in-memory if needed or limit appropriately
+    if (options.limit && !options.genre) {
       const from = options.offset || 0;
       const to = from + options.limit - 1;
       query = query.range(from, to);
@@ -193,9 +206,22 @@ export async function getSeriesList(options: FetchSeriesOptions = {}): Promise<S
       return [];
     }
 
-    return (data || [])
+    let results = (data || [])
       .map(mapSeriesFromDb)
       .filter((s): s is Series => s !== null);
+
+    if (options.genre) {
+      const targetGenre = options.genre.toLowerCase();
+      results = results.filter((s) =>
+        s.genres?.some((g) => g.toLowerCase() === targetGenre)
+      );
+      if (options.limit) {
+        const from = options.offset || 0;
+        results = results.slice(from, from + options.limit);
+      }
+    }
+
+    return results;
   } catch (err) {
     console.error("Caught error in getSeriesList:", err);
     return [];

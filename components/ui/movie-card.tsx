@@ -9,6 +9,8 @@ export interface MovieCardItem {
   slug?: string;
   posterUrl?: string;
   bannerUrl?: string;
+  poster_url?: string;
+  banner_url?: string;
   thumbnailUrl?: string;
   year?: number;
   rating?: number;
@@ -20,6 +22,9 @@ export interface MovieCardItem {
   category?: string;
   country?: string;
   isSeries?: boolean;
+  type?: "movie" | "series";
+  synopsis?: string;
+  status?: string;
   createdAt?: string | Date;
 }
 
