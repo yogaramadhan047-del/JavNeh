@@ -11,7 +11,7 @@ export async function getHotCarouselItems(): Promise<MovieCardItem[]> {
   try {
     const [movies, seriesList] = await Promise.all([
       getMovies({ status: "Published", badge: "Hot", limit: 12 }).catch(() => []),
-      getSeriesList({ status: "Published", badge: "Hot", limit: 12 }).catch(() => []),
+      getSeriesList({ badge: "Hot", limit: 12 }).catch(() => []),
     ]);
 
     const combined: MovieCardItem[] = [

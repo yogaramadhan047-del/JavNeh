@@ -51,7 +51,7 @@ export default async function AnimePage({
   const [genres, animeMovies, animeSeries] = await Promise.all([
     getGenres(),
     getMovies({ genre, status: "Published", category: "Anime", limit: 20 }).catch(() => []),
-    getSeriesList({ genre, status: "Published", category: "Anime", limit: 20 }).catch(() => []),
+    getSeriesList({ genre, category: "Anime", limit: 20 }).catch(() => []),
   ]);
 
   // Combine, normalize, and strictly enforce category filter

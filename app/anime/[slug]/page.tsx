@@ -76,7 +76,15 @@ export default async function AnimeDetailPage({
   const { slug } = await params;
   const content = await getUnifiedContentBySlug(slug, "Anime");
 
-  if (!content || (content.status && content.status !== "Published")) {
+  if (!content) {
+    notFound();
+  }
+
+  const isInvalidStatus = content.isSeries
+    ? content.status === "Draft"
+    : content.status && content.status !== "Published";
+
+  if (isInvalidStatus) {
     notFound();
   }
 

@@ -76,7 +76,15 @@ export default async function DramaJepangDetailPage({
   const { slug } = await params;
   const content = await getUnifiedContentBySlug(slug, "Drama Jepang");
 
-  if (!content || (content.status && content.status !== "Published")) {
+  if (!content) {
+    notFound();
+  }
+
+  const isInvalidStatus = content.isSeries
+    ? content.status === "Draft"
+    : content.status && content.status !== "Published";
+
+  if (isInvalidStatus) {
     notFound();
   }
 

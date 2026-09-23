@@ -137,7 +137,7 @@ export function adaptSeriesToUnifiedContent(series: Series): UnifiedContent {
     poster_url: posterUrl,
     badge: series.badge || "",
     resolution: series.resolution || "1080p",
-    status: series.status || "Published",
+    status: series.status || "Ongoing",
     views: series.views || 0,
     streamingUrl: firstEpServers[0]?.url || "",
     downloadUrl,
@@ -200,7 +200,7 @@ export async function getRelatedUnifiedContent(
   try {
     const [movies, seriesList] = await Promise.all([
       getMovies({ status: "Published", category: content.category, limit: limit + 2 }).catch(() => []),
-      getSeriesList({ status: "Published", category: content.category, limit: limit + 2 }).catch(() => []),
+      getSeriesList({ category: content.category, limit: limit + 2 }).catch(() => []),
     ]);
 
     const unified: UnifiedContent[] = [

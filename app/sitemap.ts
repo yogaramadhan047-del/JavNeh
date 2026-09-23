@@ -35,11 +35,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         console.error("Error fetching drama movies for sitemap:", err);
         return [];
       }),
-      getSeriesList({ status: "Published", category: "Anime" }).catch((err) => {
+      getSeriesList({ category: "Anime" }).catch((err) => {
         console.error("Error fetching anime series for sitemap:", err);
         return [];
       }),
-      getSeriesList({ status: "Published", category: "Drama Jepang" }).catch((err) => {
+      getSeriesList({ category: "Drama Jepang" }).catch((err) => {
         console.error("Error fetching drama series for sitemap:", err);
         return [];
       }),
@@ -118,10 +118,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Error formatting movies for sitemap:", error);
   }
 
-  // 3. Series (Anime & Drama Jepang) - Strictly Published only
+  // 3. Series (Anime & Drama Jepang) - Non-Draft only (Ongoing & Completed)
   try {
     animeSeriesEntries = (publishedAnimeSeries || [])
-      .filter((s) => s.status === "Published" && (s.slug || s.id))
+      .filter((s) => s.status !== "Draft" && (s.slug || s.id))
       .map((series) => {
         const slug = encodeURIComponent(series.slug || series.id);
         const lastMod = series.updatedAt
@@ -139,7 +139,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
 
     dramaSeriesEntries = (publishedDramaSeries || [])
-      .filter((s) => s.status === "Published" && (s.slug || s.id))
+      .filter((s) => s.status !== "Draft" && (s.slug || s.id))
       .map((series) => {
         const slug = encodeURIComponent(series.slug || series.id);
         const lastMod = series.updatedAt

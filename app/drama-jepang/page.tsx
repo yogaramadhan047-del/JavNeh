@@ -51,7 +51,7 @@ export default async function DramaJepangPage({
   const [genres, dramaMovies, dramaSeries] = await Promise.all([
     getGenres(),
     getMovies({ genre, status: "Published", category: "Drama Jepang", limit: 20 }).catch(() => []),
-    getSeriesList({ genre, status: "Published", category: "Drama Jepang", limit: 20 }).catch(() => []),
+    getSeriesList({ genre, category: "Drama Jepang", limit: 20 }).catch(() => []),
   ]);
 
   // Combine drama series and movies, strictly enforcing category 'Drama Jepang'

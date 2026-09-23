@@ -57,7 +57,7 @@ async function getRecentAnime() {
   try {
     const [movies, series] = await Promise.all([
       getMovies({ status: "Published", category: "Anime", limit: 12 }).catch(() => []),
-      getSeriesList({ status: "Published", category: "Anime", limit: 12 }).catch(() => []),
+      getSeriesList({ category: "Anime", limit: 12 }).catch(() => []),
     ]);
 
     const combined = [
@@ -110,7 +110,7 @@ async function getRecentDrama() {
   try {
     const [movies, seriesList] = await Promise.all([
       getMovies({ status: "Published", category: "Drama Jepang", limit: 12 }).catch(() => []),
-      getSeriesList({ status: "Published", category: "Drama Jepang", limit: 12 }).catch(() => []),
+      getSeriesList({ category: "Drama Jepang", limit: 12 }).catch(() => []),
     ]);
 
     const combined = [
