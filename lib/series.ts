@@ -154,6 +154,8 @@ export interface FetchSeriesOptions {
   search?: string;
   limit?: number;
   offset?: number;
+  from?: number;
+  to?: number;
   orderBy?: "createdAt" | "views" | "rating" | "year";
   ascending?: boolean;
 }
@@ -194,7 +196,9 @@ export async function getSeriesList(options: FetchSeriesOptions = {}): Promise<S
     query = query.order(sortField, { ascending: options.ascending ?? false });
 
     // Note: When genre filter is specified, we fetch and filter in-memory if needed or limit appropriately
-    if (options.limit && !options.genre) {
+    if (options.from !== undefined && options.to !== undefined && !options.genre) {
+      query = query.range(options.from, options.to);
+    } else if (options.limit && !options.genre) {
       const from = options.offset || 0;
       const to = from + options.limit - 1;
       query = query.range(from, to);
@@ -215,7 +219,9 @@ export async function getSeriesList(options: FetchSeriesOptions = {}): Promise<S
       results = results.filter((s) =>
         s.genres?.some((g) => g.toLowerCase() === targetGenre)
       );
-      if (options.limit) {
+      if (options.from !== undefined && options.to !== undefined) {
+        results = results.slice(options.from, options.to + 1);
+      } else if (options.limit) {
         const from = options.offset || 0;
         results = results.slice(from, from + options.limit);
       }

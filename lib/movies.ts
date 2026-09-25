@@ -155,6 +155,8 @@ export interface FetchMoviesOptions {
   year?: number;
   limit?: number;
   offset?: number;
+  from?: number;
+  to?: number;
   orderBy?: "createdAt" | "views" | "rating" | "year";
   ascending?: boolean;
 }
@@ -202,7 +204,9 @@ export async function getMovies(options: FetchMoviesOptions = {}): Promise<Movie
 
     query = query.order(sortField, { ascending: options.ascending ?? false });
 
-    if (options.limit) {
+    if (options.from !== undefined && options.to !== undefined) {
+      query = query.range(options.from, options.to);
+    } else if (options.limit) {
       const from = options.offset || 0;
       const to = from + options.limit - 1;
       query = query.range(from, to);

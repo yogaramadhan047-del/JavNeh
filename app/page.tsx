@@ -13,7 +13,6 @@ import { ApologyModal } from "@/components/ui/apology-modal";
 import { FeaturedCarousel } from "@/components/home/featured-carousel";
 import Link from "next/link";
 import { Article } from "@/types/article";
-import { Movie } from "@/types/movie";
 import { getArticles } from "@/lib/articles";
 import { getMovies } from "@/lib/movies";
 import { getSeriesList } from "@/lib/series";
@@ -51,13 +50,13 @@ export const metadata: Metadata = {
 };
 
 /**
- * Fetch up to 6 latest Anime items using strict category filter
+ * Fetch up to 8 latest Anime items using strict category filter
  */
 async function getRecentAnime() {
   try {
     const [movies, series] = await Promise.all([
-      getMovies({ status: "Published", category: "Anime", limit: 12 }).catch(() => []),
-      getSeriesList({ category: "Anime", limit: 12 }).catch(() => []),
+      getMovies({ status: "Published", category: "Anime", limit: 16 }).catch(() => []),
+      getSeriesList({ category: "Anime", limit: 16 }).catch(() => []),
     ]);
 
     const combined = [
@@ -96,7 +95,7 @@ async function getRecentAnime() {
       return timeB - timeA;
     });
 
-    return uniqueItems.slice(0, 6);
+    return uniqueItems.slice(0, 8);
   } catch (error) {
     console.error("Error fetching anime:", error);
     return [];
@@ -104,13 +103,13 @@ async function getRecentAnime() {
 }
 
 /**
- * Fetch up to 6 latest Drama Jepang items using strict category filter
+ * Fetch up to 8 latest Drama Jepang items using strict category filter
  */
 async function getRecentDrama() {
   try {
     const [movies, seriesList] = await Promise.all([
-      getMovies({ status: "Published", category: "Drama Jepang", limit: 12 }).catch(() => []),
-      getSeriesList({ category: "Drama Jepang", limit: 12 }).catch(() => []),
+      getMovies({ status: "Published", category: "Drama Jepang", limit: 16 }).catch(() => []),
+      getSeriesList({ category: "Drama Jepang", limit: 16 }).catch(() => []),
     ]);
 
     const combined = [
@@ -149,7 +148,7 @@ async function getRecentDrama() {
       return timeB - timeA;
     });
 
-    return uniqueItems.slice(0, 6);
+    return uniqueItems.slice(0, 8);
   } catch (error) {
     console.error("Error fetching drama:", error);
     return [];
@@ -170,11 +169,9 @@ async function getRecentArticles(): Promise<Article[]> {
 
 function MovieGridSkeleton() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {[...Array(6)].map((_, i) => (
-        <div key={i} className={i >= 4 ? "hidden md:block" : "block"}>
-          <MovieCardSkeleton />
-        </div>
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+      {[...Array(8)].map((_, i) => (
+        <MovieCardSkeleton key={i} />
       ))}
     </div>
   );
@@ -215,11 +212,9 @@ async function AnimeSection() {
     );
   }
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {animeList.slice(0, 6).map((anime, index) => (
-        <div key={anime.id} className={index >= 4 ? "hidden md:block" : "block"}>
-          <MovieCard movie={anime} baseUrl="/anime" />
-        </div>
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+      {animeList.slice(0, 8).map((anime) => (
+        <MovieCard key={anime.id} movie={anime} baseUrl="/anime" />
       ))}
     </div>
   );
@@ -235,11 +230,9 @@ async function DramaJepangSection() {
     );
   }
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {dramaList.slice(0, 6).map((item, index) => (
-        <div key={item.id} className={index >= 4 ? "hidden md:block" : "block"}>
-          <MovieCard movie={item} baseUrl="/drama-jepang" />
-        </div>
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+      {dramaList.slice(0, 8).map((item) => (
+        <MovieCard key={item.id} movie={item} baseUrl="/drama-jepang" />
       ))}
     </div>
   );
@@ -378,7 +371,7 @@ export default function Home() {
           </div>
 
           <div className="w-full max-w-7xl mx-auto px-4 pb-14 pt-4 space-y-12">
-            {/* 3. Anime (4 on mobile, 6 on tablet & desktop) */}
+            {/* 3. Anime (8 items: 2 cols mobile, 4 cols desktop) */}
             <section>
               <SectionHeader title="Anime Terbaru" href="/anime" />
               <Suspense fallback={<MovieGridSkeleton />}>
@@ -386,7 +379,7 @@ export default function Home() {
               </Suspense>
             </section>
 
-            {/* 4. Drama Jepang (4 on mobile, 6 on tablet & desktop) */}
+            {/* 4. Drama Jepang (8 items: 2 cols mobile, 4 cols desktop) */}
             <section>
               <SectionHeader title="Drama Jepang Terbaru" href="/drama-jepang" />
               <Suspense fallback={<MovieGridSkeleton />}>
@@ -394,7 +387,7 @@ export default function Home() {
               </Suspense>
             </section>
 
-            {/* 5. Artikel (4 on mobile, 6 on tablet & desktop) */}
+            {/* 5. Artikel (6 items) */}
             <section>
               <SectionHeader title="Artikel Terbaru" href="/artikel" />
               <Suspense fallback={<ArticleGridSkeleton />}>

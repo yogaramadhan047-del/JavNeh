@@ -5,33 +5,47 @@ import { Metadata } from "next";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { GenreScrollRow } from "@/components/ui/genre-scroll-row";
 import { MovieCard } from "@/components/ui/movie-card";
+import { Pagination } from "@/components/ui/pagination";
 import { getMovies, getGenres } from "@/lib/movies";
 import { getSeriesList } from "@/lib/series";
+import { supabase } from "@/lib/supabase";
 import { Tv } from "lucide-react";
+
+const ITEMS_PER_PAGE = 24;
 
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ genre?: string }>;
+  searchParams: Promise<{ genre?: string; page?: string }>;
 }): Promise<Metadata> {
-  const { genre } = await searchParams;
+  const { genre, page } = await searchParams;
+  const pageNum = Math.max(1, parseInt(page || "1", 10) || 1);
+  const pageSuffix = pageNum > 1 ? ` - Halaman ${pageNum}` : "";
   const title = genre
-    ? `Nonton Drama Jepang (Dorama) Genre ${genre} Subtitle Indonesia - XStream21`
-    : "Nonton Drama Jepang (Dorama) Subtitle Indonesia Terbaru - XStream21";
+    ? `Nonton Drama Jepang (Dorama) Genre ${genre} Subtitle Indonesia${pageSuffix} - XStream21`
+    : `Nonton Drama Jepang (Dorama) Subtitle Indonesia Terbaru${pageSuffix} - XStream21`;
   const description = genre
     ? `Streaming & download Drama Jepang (Dorama) genre ${genre} subtitle Indonesia terlengkap dan terupdate gratis di XStream21.`
     : "Koleksi Drama Jepang (Dorama) & Japanese TV Series subtitle Indonesia terlengkap dari berbagai genre terupdate di XStream21.";
+
+  const canonicalUrl = `${SITE_URL}/drama-jepang${
+    genre
+      ? `?genre=${encodeURIComponent(genre)}${pageNum > 1 ? `&page=${pageNum}` : ""}`
+      : pageNum > 1
+      ? `?page=${pageNum}`
+      : ""
+  }`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: `${SITE_URL}/drama-jepang${genre ? `?genre=${encodeURIComponent(genre)}` : ""}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
       title,
       description,
-      url: `${SITE_URL}/drama-jepang${genre ? `?genre=${encodeURIComponent(genre)}` : ""}`,
+      url: canonicalUrl,
       siteName: "XStream21",
       locale: "id_ID",
       type: "website",
@@ -39,19 +53,62 @@ export async function generateMetadata({
   };
 }
 
+async function getDramaTotalCount(genre?: string): Promise<number> {
+  try {
+    let moviesQuery = supabase
+      .from("movies")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "Published")
+      .eq("category", "Drama Jepang");
+
+    if (genre) {
+      moviesQuery = moviesQuery.contains("genres", [genre]);
+    }
+
+    let seriesQuery = supabase
+      .from("series")
+      .select("id", { count: "exact", head: true })
+      .eq("category", "Drama Jepang");
+
+    const [{ count: mCount }, { count: sCount }] = await Promise.all([
+      moviesQuery,
+      seriesQuery,
+    ]);
+
+    return (mCount || 0) + (sCount || 0);
+  } catch {
+    return 0;
+  }
+}
+
 export default async function DramaJepangPage({
   searchParams,
 }: {
-  searchParams: Promise<{ genre?: string }>;
+  searchParams: Promise<{ genre?: string; page?: string }>;
 }) {
-  const { genre } = await searchParams;
+  const { genre, page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
 
-  // Fetch genres and strictly filtered Drama Jepang (maximum 10 items)
-  // Query Supabase with .eq('category', 'Drama Jepang'). Anime MUST NOT appear here.
-  const [genres, dramaMovies, dramaSeries] = await Promise.all([
+  // Fetch range using exact range parameters
+  const from = 0;
+  const to = currentPage * ITEMS_PER_PAGE;
+
+  const [genres, dramaMovies, dramaSeries, totalCount] = await Promise.all([
     getGenres(),
-    getMovies({ genre, status: "Published", category: "Drama Jepang", limit: 20 }).catch(() => []),
-    getSeriesList({ genre, category: "Drama Jepang", limit: 20 }).catch(() => []),
+    getMovies({
+      genre,
+      status: "Published",
+      category: "Drama Jepang",
+      from,
+      to,
+    }).catch(() => []),
+    getSeriesList({
+      genre,
+      category: "Drama Jepang",
+      from,
+      to,
+    }).catch(() => []),
+    getDramaTotalCount(genre),
   ]);
 
   // Combine drama series and movies, strictly enforcing category 'Drama Jepang'
@@ -92,8 +149,14 @@ export default async function DramaJepangPage({
     return timeB - timeA;
   });
 
-  // Exact maximum of 10 items
-  const displayItems = uniqueItems.slice(0, 10);
+  // Calculate slice for current page
+  const pageStartIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const pageEndIndex = pageStartIndex + ITEMS_PER_PAGE;
+  const displayItems = uniqueItems.slice(pageStartIndex, pageEndIndex);
+
+  const effectiveTotal = Math.max(totalCount, uniqueItems.length);
+  const totalPages = effectiveTotal > 0 ? Math.ceil(effectiveTotal / ITEMS_PER_PAGE) : 1;
+  const hasNextPage = currentPage < totalPages || uniqueItems.length > pageEndIndex;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -160,24 +223,43 @@ export default async function DramaJepangPage({
         />
 
         {displayItems.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {displayItems.map((item) => (
-              <MovieCard
-                key={item.id}
-                movie={item}
-                baseUrl="/drama-jepang"
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {displayItems.map((item) => (
+                <MovieCard
+                  key={item.id}
+                  movie={item}
+                  baseUrl="/drama-jepang"
+                />
+              ))}
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              hasNextPage={hasNextPage}
+              totalPages={totalPages}
+              baseUrl="/drama-jepang"
+              searchParams={{ genre }}
+            />
+          </>
         ) : (
           <div className="min-h-[40vh] flex flex-col items-center justify-center p-4 text-center border border-dashed border-border-dark rounded-2xl">
             <Tv className="w-16 h-16 text-text-muted mb-4 opacity-50" />
             <h2 className="text-2xl font-bold text-text-main mb-2">Belum ada Drama Jepang</h2>
-            <p className="text-text-muted max-w-md">
+            <p className="text-text-muted max-w-md mb-4">
               {genre
                 ? `Tidak ditemukan drama Jepang untuk genre "${genre}".`
                 : "Daftar drama Jepang saat ini belum tersedia. Silakan cek kembali beberapa saat lagi."}
             </p>
+            {currentPage > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                hasNextPage={false}
+                totalPages={totalPages}
+                baseUrl="/drama-jepang"
+                searchParams={{ genre }}
+              />
+            )}
           </div>
         )}
       </div>

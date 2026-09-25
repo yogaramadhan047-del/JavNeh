@@ -5,33 +5,47 @@ import { Metadata } from "next";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { MovieCard } from "@/components/ui/movie-card";
 import { GenreScrollRow } from "@/components/ui/genre-scroll-row";
+import { Pagination } from "@/components/ui/pagination";
 import { getMovies, getGenres } from "@/lib/movies";
 import { getSeriesList } from "@/lib/series";
+import { supabase } from "@/lib/supabase";
 import { Film } from "lucide-react";
+
+const ITEMS_PER_PAGE = 24;
 
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ genre?: string }>;
+  searchParams: Promise<{ genre?: string; page?: string }>;
 }): Promise<Metadata> {
-  const { genre } = await searchParams;
+  const { genre, page } = await searchParams;
+  const pageNum = Math.max(1, parseInt(page || "1", 10) || 1);
+  const pageSuffix = pageNum > 1 ? ` - Halaman ${pageNum}` : "";
   const title = genre
-    ? `Nonton Anime Genre ${genre} Subtitle Indonesia - XStream21`
-    : "Nonton Anime Subtitle Indonesia Terbaru - XStream21";
+    ? `Nonton Anime Genre ${genre} Subtitle Indonesia${pageSuffix} - XStream21`
+    : `Nonton Anime Subtitle Indonesia Terbaru${pageSuffix} - XStream21`;
   const description = genre
     ? `Streaming & download anime genre ${genre} subtitle Indonesia terlengkap dan terupdate gratis di XStream21.`
     : "Koleksi anime subtitle Indonesia terlengkap dari berbagai genre, movie anime, dan serial anime terupdate di XStream21.";
+
+  const canonicalUrl = `${SITE_URL}/anime${
+    genre
+      ? `?genre=${encodeURIComponent(genre)}${pageNum > 1 ? `&page=${pageNum}` : ""}`
+      : pageNum > 1
+      ? `?page=${pageNum}`
+      : ""
+  }`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: `${SITE_URL}/anime${genre ? `?genre=${encodeURIComponent(genre)}` : ""}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
       title,
       description,
-      url: `${SITE_URL}/anime${genre ? `?genre=${encodeURIComponent(genre)}` : ""}`,
+      url: canonicalUrl,
       siteName: "XStream21",
       locale: "id_ID",
       type: "website",
@@ -39,19 +53,62 @@ export async function generateMetadata({
   };
 }
 
+async function getAnimeTotalCount(genre?: string): Promise<number> {
+  try {
+    let moviesQuery = supabase
+      .from("movies")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "Published")
+      .eq("category", "Anime");
+
+    if (genre) {
+      moviesQuery = moviesQuery.contains("genres", [genre]);
+    }
+
+    let seriesQuery = supabase
+      .from("series")
+      .select("id", { count: "exact", head: true })
+      .eq("category", "Anime");
+
+    const [{ count: mCount }, { count: sCount }] = await Promise.all([
+      moviesQuery,
+      seriesQuery,
+    ]);
+
+    return (mCount || 0) + (sCount || 0);
+  } catch {
+    return 0;
+  }
+}
+
 export default async function AnimePage({
   searchParams,
 }: {
-  searchParams: Promise<{ genre?: string }>;
+  searchParams: Promise<{ genre?: string; page?: string }>;
 }) {
-  const { genre } = await searchParams;
+  const { genre, page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
 
-  // Fetch genres and strictly filtered Anime (maximum 10 items)
-  // Query Supabase with .eq('category', 'Anime'). Drama Jepang MUST NOT appear here.
-  const [genres, animeMovies, animeSeries] = await Promise.all([
+  // Fetch range using exact range parameters
+  const from = 0;
+  const to = currentPage * ITEMS_PER_PAGE;
+
+  const [genres, animeMovies, animeSeries, totalCount] = await Promise.all([
     getGenres(),
-    getMovies({ genre, status: "Published", category: "Anime", limit: 20 }).catch(() => []),
-    getSeriesList({ genre, category: "Anime", limit: 20 }).catch(() => []),
+    getMovies({
+      genre,
+      status: "Published",
+      category: "Anime",
+      from,
+      to,
+    }).catch(() => []),
+    getSeriesList({
+      genre,
+      category: "Anime",
+      from,
+      to,
+    }).catch(() => []),
+    getAnimeTotalCount(genre),
   ]);
 
   // Combine, normalize, and strictly enforce category filter
@@ -92,8 +149,14 @@ export default async function AnimePage({
     return timeB - timeA;
   });
 
-  // Exact maximum of 10 items
-  const displayAnime = uniqueAnime.slice(0, 10);
+  // Calculate slice for current page
+  const pageStartIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const pageEndIndex = pageStartIndex + ITEMS_PER_PAGE;
+  const displayAnime = uniqueAnime.slice(pageStartIndex, pageEndIndex);
+
+  const effectiveTotal = Math.max(totalCount, uniqueAnime.length);
+  const totalPages = effectiveTotal > 0 ? Math.ceil(effectiveTotal / ITEMS_PER_PAGE) : 1;
+  const hasNextPage = currentPage < totalPages || uniqueAnime.length > pageEndIndex;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -160,20 +223,39 @@ export default async function AnimePage({
         />
 
         {displayAnime.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {displayAnime.map((anime) => (
-              <MovieCard key={anime.id} movie={anime} baseUrl="/anime" />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {displayAnime.map((anime) => (
+                <MovieCard key={anime.id} movie={anime} baseUrl="/anime" />
+              ))}
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              hasNextPage={hasNextPage}
+              totalPages={totalPages}
+              baseUrl="/anime"
+              searchParams={{ genre }}
+            />
+          </>
         ) : (
           <div className="min-h-[40vh] flex flex-col items-center justify-center p-4 text-center border border-dashed border-border-dark rounded-2xl">
             <Film className="w-16 h-16 text-text-muted mb-4 opacity-50" />
             <h2 className="text-2xl font-bold text-text-main mb-2">Belum ada Anime</h2>
-            <p className="text-text-muted max-w-md">
+            <p className="text-text-muted max-w-md mb-4">
               {genre
                 ? `Tidak ditemukan anime untuk genre "${genre}".`
                 : "Daftar anime saat ini belum tersedia. Silakan cek kembali beberapa saat lagi."}
             </p>
+            {currentPage > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                hasNextPage={false}
+                totalPages={totalPages}
+                baseUrl="/anime"
+                searchParams={{ genre }}
+              />
+            )}
           </div>
         )}
       </div>
