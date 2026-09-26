@@ -193,7 +193,7 @@ export default async function AnimePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <div className="w-full max-w-7xl mx-auto px-4 py-8">
+      <div className="w-full max-w-7xl mx-auto px-4 py-8 overflow-x-hidden">
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
@@ -224,7 +224,7 @@ export default async function AnimePage({
 
         {displayAnime.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 w-full max-w-full">
               {displayAnime.map((anime) => (
                 <MovieCard key={anime.id} movie={anime} baseUrl="/anime" />
               ))}

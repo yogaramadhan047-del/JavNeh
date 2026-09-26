@@ -36,15 +36,15 @@ export function Pagination({
   return (
     <nav
       aria-label="Navigasi Halaman"
-      className="flex items-center justify-between sm:justify-center gap-3 mt-10 pt-6 border-t border-border-dark"
+      className="w-full max-w-full flex items-center justify-between sm:justify-center gap-2 sm:gap-3 mt-10 pt-6 border-t border-border-dark overflow-hidden box-border"
     >
       {/* Tombol Sebelumnya */}
       {hasPrevPage ? (
         <Link
           href={buildPageUrl(currentPage - 1)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card-dark border border-border-dark text-text-main text-sm font-medium hover:border-primary-blue hover:text-primary-blue transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue/50"
+          className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-card-dark border border-border-dark text-text-main text-xs sm:text-sm font-medium hover:border-primary-blue hover:text-primary-blue transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue/50 shrink-0"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4 shrink-0" />
           <span>Sebelumnya</span>
         </Link>
       ) : (
@@ -52,20 +52,20 @@ export function Pagination({
           type="button"
           disabled
           aria-disabled="true"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card-dark/50 border border-border-dark/50 text-text-muted/50 text-sm font-medium cursor-not-allowed opacity-50"
+          className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-card-dark/50 border border-border-dark/50 text-text-muted/50 text-xs sm:text-sm font-medium cursor-not-allowed opacity-50 shrink-0"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4 shrink-0" />
           <span>Sebelumnya</span>
         </button>
       )}
 
       {/* Info Halaman Aktif */}
-      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card-dark border border-border-dark text-xs sm:text-sm text-text-muted">
-        <span>Halaman</span>
+      <div className="flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-card-dark border border-border-dark text-xs sm:text-sm text-text-muted shrink min-w-0 truncate text-center">
+        <span>Hal</span>
         <span className="font-semibold text-text-main">{currentPage}</span>
         {totalPages && totalPages > 0 ? (
           <>
-            <span>dari</span>
+            <span>/</span>
             <span className="font-semibold text-text-main">{totalPages}</span>
           </>
         ) : null}
@@ -75,20 +75,20 @@ export function Pagination({
       {hasNextPage ? (
         <Link
           href={buildPageUrl(currentPage + 1)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card-dark border border-border-dark text-text-main text-sm font-medium hover:border-primary-blue hover:text-primary-blue transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue/50"
+          className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-card-dark border border-border-dark text-text-main text-xs sm:text-sm font-medium hover:border-primary-blue hover:text-primary-blue transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue/50 shrink-0"
         >
           <span>Berikutnya</span>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4 shrink-0" />
         </Link>
       ) : (
         <button
           type="button"
           disabled
           aria-disabled="true"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card-dark/50 border border-border-dark/50 text-text-muted/50 text-sm font-medium cursor-not-allowed opacity-50"
+          className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-card-dark/50 border border-border-dark/50 text-text-muted/50 text-xs sm:text-sm font-medium cursor-not-allowed opacity-50 shrink-0"
         >
           <span>Berikutnya</span>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4 shrink-0" />
         </button>
       )}
     </nav>

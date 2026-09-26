@@ -328,7 +328,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -338,30 +338,30 @@ export default function Home() {
       {/* 1. Hero Section (Strictly Hot Content Only) */}
       <CarouselSection />
 
-      <div className="relative w-full flex-1 flex flex-col">
+      <div className="relative w-full max-w-full flex-1 flex flex-col overflow-x-hidden">
         {/* Animated Background Aura Glow */}
         <div
-          className="absolute inset-0 overflow-hidden pointer-events-none select-none"
+          className="absolute inset-0 overflow-hidden pointer-events-none select-none max-w-full"
           style={{
             maskImage: "linear-gradient(to bottom, black 0%, black 40%, transparent 90%)",
             WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 40%, transparent 90%)",
           }}
         >
           <div
-            className="absolute top-[-5%] left-1/2 -translate-x-1/2 w-[120vw] max-w-[1200px] h-[700px] bg-purple-600/40 rounded-full blur-[120px] md:blur-[150px] animate-pulse"
+            className="absolute top-[-5%] left-1/2 -translate-x-1/2 w-full max-w-[1200px] h-[700px] bg-purple-600/40 rounded-full blur-[120px] md:blur-[150px] animate-pulse"
             style={{ animationDuration: "8s" }}
           />
           <div
-            className="absolute top-[5%] left-[5%] w-[90vw] max-w-[900px] h-[600px] bg-blue-600/40 rounded-full blur-[120px] md:blur-[160px] animate-pulse"
+            className="absolute top-[5%] left-[5%] w-full max-w-[900px] h-[600px] bg-blue-600/40 rounded-full blur-[120px] md:blur-[160px] animate-pulse"
             style={{ animationDelay: "2s", animationDuration: "6s" }}
           />
           <div
-            className="absolute top-[5%] right-[5%] w-[80vw] max-w-[800px] h-[600px] bg-cyan-500/30 rounded-full blur-[120px] md:blur-[160px] animate-pulse"
+            className="absolute top-[5%] right-[5%] w-full max-w-[800px] h-[600px] bg-cyan-500/30 rounded-full blur-[120px] md:blur-[160px] animate-pulse"
             style={{ animationDelay: "4s", animationDuration: "7s" }}
           />
         </div>
 
-        <div className="relative z-10 w-full flex-1 flex flex-col">
+        <div className="relative z-10 w-full max-w-full flex-1 flex flex-col">
           {/* 2. Search Section */}
           <HeroSearch />
 

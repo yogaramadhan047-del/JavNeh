@@ -18,7 +18,8 @@ const inter = Inter({ subsets: ["latin"] });
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export const metadata: Metadata = {
@@ -95,7 +96,7 @@ export default async function RootLayout({
   return (
     <html lang="id" className="dark" style={{ colorScheme: "dark" }} suppressHydrationWarning>
       <body
-        className={`${inter.className} bg-background-dark text-text-main min-h-screen flex flex-col transition-colors duration-300 overflow-x-hidden`}
+        className={`${inter.className} bg-background-dark text-text-main min-h-screen flex flex-col transition-colors duration-300 w-full max-w-[100vw] overflow-x-hidden`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" disableTransitionOnChange>
           <AdvertisementProvider initialSettings={adSettings}>
@@ -107,7 +108,7 @@ export default async function RootLayout({
             )}
             <Navbar />
             <AntiAdBlock />
-            <main className="flex-1 flex flex-col">
+            <main className="flex-1 flex flex-col w-full max-w-full overflow-x-hidden">
               {children}
               <div className="mt-auto">
                 <FooterBanners />
