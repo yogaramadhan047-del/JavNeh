@@ -169,7 +169,7 @@ export async function getMovies(options: FetchMoviesOptions = {}): Promise<Movie
 
     // Single source of truth: category filtering
     if (options.category) {
-      query = query.eq("category", options.category);
+      query = query.ilike("category", options.category);
     }
 
     if (options.badge) {
