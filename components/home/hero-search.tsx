@@ -77,7 +77,7 @@ export function HeroSearch() {
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted h-5 w-5 group-focus-within:text-primary-blue transition-colors" />
             <input
               type="text"
-              placeholder="Cari anime, drama, artikel..."
+              placeholder="Cari movie, artikel..."
               className="w-full pl-12 sm:pl-14 pr-24 py-4 sm:py-5 text-base sm:text-lg rounded-full shadow-lg border border-border-dark bg-card-dark/80 backdrop-blur focus-visible:ring-2 focus-visible:ring-primary-blue outline-none transition-all text-text-main"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
