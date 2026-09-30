@@ -15,16 +15,15 @@ import Link from "next/link";
 import { Article } from "@/types/article";
 import { getArticles } from "@/lib/articles";
 import { getMovies } from "@/lib/movies";
-import { getSeriesList } from "@/lib/series";
 import { getHotCarouselItems } from "@/lib/carousel";
 import { HeaderBanners } from "@/components/ads/placements";
 
 export const metadata: Metadata = {
-  title: "XStream21 - Nonton Anime & Drama Jepang Sub Indo",
-  description: "Platform streaming Anime dan Drama Jepang subtitle Indonesia dengan artikel, berita, dan review terkini.",
+  title: "XStream21 - Nonton Film & Movie Subtitle Indonesia Terbaru",
+  description: "Platform streaming film dan movie subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
   openGraph: {
-    title: "XStream21 - Nonton Anime & Drama Jepang Sub Indo",
-    description: "Platform streaming Anime dan Drama Jepang subtitle Indonesia dengan artikel, berita, dan review terkini.",
+    title: "XStream21 - Nonton Film & Movie Subtitle Indonesia Terbaru",
+    description: "Platform streaming film dan movie subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
     url: SITE_URL,
     siteName: "XStream21",
     images: [
@@ -40,8 +39,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "XStream21 - Nonton Anime & Drama Jepang Sub Indo",
-    description: "Platform streaming Anime dan Drama Jepang subtitle Indonesia dengan artikel, berita, dan review terkini.",
+    title: "XStream21 - Nonton Film & Movie Subtitle Indonesia Terbaru",
+    description: "Platform streaming film dan movie subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
     images: [`${SITE_URL}/og-image.jpg`],
   },
   alternates: {
@@ -50,117 +49,24 @@ export const metadata: Metadata = {
 };
 
 /**
- * Fetch up to 8 latest Anime items using strict category filter
+ * Fetch up to 8 latest Movie items
  */
-async function getRecentAnime() {
+async function getRecentMovies() {
   try {
-    const [movies, series] = await Promise.all([
-      getMovies({ status: "Published", category: "Anime", limit: 16 }).catch(() => []),
-      getSeriesList({ category: "Anime", limit: 16 }).catch(() => []),
-    ]);
-
-    const combined = [
-      ...movies.map((m) => ({
-        ...m,
-        isSeries: false,
-        type: "movie" as const,
-        poster_url: m.posterUrl,
-        banner_url: m.bannerUrl,
-      })),
-      ...series.map((s) => ({
-        ...s,
-        isSeries: true,
-        type: "series" as const,
-        poster_url: s.posterUrl,
-        banner_url: s.bannerUrl,
-      })),
-    ].filter((item) => item.category === "Anime");
-
-    // Deduplicate by id or slug
-    const uniqueItems: typeof combined = [];
-    const seenIds = new Set<string>();
-    const seenSlugs = new Set<string>();
-
-    for (const item of combined) {
-      if (seenIds.has(item.id)) continue;
-      if (item.slug && seenSlugs.has(item.slug)) continue;
-      seenIds.add(item.id);
-      if (item.slug) seenSlugs.add(item.slug);
-      uniqueItems.push(item);
-    }
-
-    uniqueItems.sort((a, b) => {
-      const timeA = new Date(a.createdAt || a.updatedAt || 0).getTime();
-      const timeB = new Date(b.createdAt || b.updatedAt || 0).getTime();
-      return timeB - timeA;
-    });
-
-    return uniqueItems.slice(0, 8);
+    const movies = await getMovies({ status: "Published", limit: 8 }).catch(() => []);
+    return movies;
   } catch (error) {
-    console.error("Error fetching anime:", error);
+    console.error("Error fetching recent movies:", error);
     return [];
   }
 }
 
 /**
- * Fetch up to 8 latest Drama Jepang items using strict category filter
- */
-async function getRecentDrama() {
-  try {
-    const [movies, seriesList] = await Promise.all([
-      getMovies({ status: "Published", category: "Drama Jepang", limit: 16 }).catch(() => []),
-      getSeriesList({ category: "Drama Jepang", limit: 16 }).catch(() => []),
-    ]);
-
-    const combined = [
-      ...movies.map((m) => ({
-        ...m,
-        isSeries: false,
-        type: "movie" as const,
-        poster_url: m.posterUrl,
-        banner_url: m.bannerUrl,
-      })),
-      ...seriesList.map((s) => ({
-        ...s,
-        isSeries: true,
-        type: "series" as const,
-        poster_url: s.posterUrl,
-        banner_url: s.bannerUrl,
-      })),
-    ].filter((item) => item.category === "Drama Jepang");
-
-    // Deduplicate by id or slug
-    const uniqueItems: typeof combined = [];
-    const seenIds = new Set<string>();
-    const seenSlugs = new Set<string>();
-
-    for (const item of combined) {
-      if (seenIds.has(item.id)) continue;
-      if (item.slug && seenSlugs.has(item.slug)) continue;
-      seenIds.add(item.id);
-      if (item.slug) seenSlugs.add(item.slug);
-      uniqueItems.push(item);
-    }
-
-    uniqueItems.sort((a, b) => {
-      const timeA = new Date(a.createdAt || a.updatedAt || 0).getTime();
-      const timeB = new Date(b.createdAt || b.updatedAt || 0).getTime();
-      return timeB - timeA;
-    });
-
-    return uniqueItems.slice(0, 8);
-  } catch (error) {
-    console.error("Error fetching drama:", error);
-    return [];
-  }
-}
-
-/**
- * Fetch up to 6 latest Articles
+ * Fetch up to 8 latest Articles
  */
 async function getRecentArticles(): Promise<Article[]> {
   try {
-    return await getArticles({ status: "Published", limit: 6 });
+    return await getArticles({ status: "Published", limit: 8 });
   } catch (error) {
     console.error("Error fetching articles:", error);
     return [];
@@ -169,7 +75,7 @@ async function getRecentArticles(): Promise<Article[]> {
 
 function MovieGridSkeleton() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
       {[...Array(8)].map((_, i) => (
         <MovieCardSkeleton key={i} />
       ))}
@@ -179,13 +85,11 @@ function MovieGridSkeleton() {
 
 function ArticleGridSkeleton() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {[...Array(6)].map((_, i) => (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+      {[...Array(8)].map((_, i) => (
         <div
           key={i}
-          className={`bg-card-dark rounded-xl overflow-hidden border border-border-dark animate-pulse ${
-            i >= 4 ? "hidden md:block" : "block"
-          }`}
+          className="bg-card-dark rounded-xl overflow-hidden border border-border-dark animate-pulse"
         >
           <div className="relative aspect-video w-full bg-gray-800/50"></div>
           <div className="p-3 sm:p-4">
@@ -202,37 +106,19 @@ function ArticleGridSkeleton() {
   );
 }
 
-async function AnimeSection() {
-  const animeList = await getRecentAnime();
-  if (!animeList.length) {
+async function MovieSection() {
+  const movieList = await getRecentMovies();
+  if (!movieList.length) {
     return (
       <div className="py-10 text-center text-text-muted border border-border-dark rounded-xl bg-card-dark">
-        Belum ada anime terbaru.
+        Belum ada film terbaru.
       </div>
     );
   }
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
-      {animeList.slice(0, 8).map((anime) => (
-        <MovieCard key={anime.id} movie={anime} baseUrl="/anime" />
-      ))}
-    </div>
-  );
-}
-
-async function DramaJepangSection() {
-  const dramaList = await getRecentDrama();
-  if (!dramaList.length) {
-    return (
-      <div className="py-10 text-center text-text-muted border border-border-dark rounded-xl bg-card-dark">
-        Belum ada drama Jepang terbaru.
-      </div>
-    );
-  }
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
-      {dramaList.slice(0, 8).map((item) => (
-        <MovieCard key={item.id} movie={item} baseUrl="/drama-jepang" />
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+      {movieList.map((movie) => (
+        <MovieCard key={movie.id} movie={movie} baseUrl="/movies" />
       ))}
     </div>
   );
@@ -248,9 +134,9 @@ async function ArticlesSection() {
     );
   }
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {articles.slice(0, 6).map((article, index) => (
-        <div key={article.id} className={index >= 4 ? "hidden md:block" : "block"}>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+      {articles.map((article) => (
+        <div key={article.id}>
           <Link
             prefetch={false}
             href={`/artikel/${article.slug || article.id}`}
@@ -262,7 +148,7 @@ async function ArticlesSection() {
                 alt={article.title}
                 type="thumbnail"
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105 group-hover:brightness-75"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
                 referrerPolicy="no-referrer"
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 33vw"
               />
@@ -370,24 +256,16 @@ export default function Home() {
             <HeaderBanners className="!my-2" />
           </div>
 
-          <div className="w-full max-w-7xl mx-auto px-4 pb-14 pt-4 space-y-12">
-            {/* 3. Anime (8 items: 2 cols mobile, 4 cols desktop) */}
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 pt-4 space-y-12">
+            {/* 3. Movies Terbaru */}
             <section>
-              <SectionHeader title="Anime Terbaru" href="/anime" />
+              <SectionHeader title="Movie Terbaru" href="/movies" />
               <Suspense fallback={<MovieGridSkeleton />}>
-                <AnimeSection />
+                <MovieSection />
               </Suspense>
             </section>
 
-            {/* 4. Drama Jepang (8 items: 2 cols mobile, 4 cols desktop) */}
-            <section>
-              <SectionHeader title="Drama Jepang Terbaru" href="/drama-jepang" />
-              <Suspense fallback={<MovieGridSkeleton />}>
-                <DramaJepangSection />
-              </Suspense>
-            </section>
-
-            {/* 5. Artikel (6 items) */}
+            {/* 4. Artikel Terbaru */}
             <section>
               <SectionHeader title="Artikel Terbaru" href="/artikel" />
               <Suspense fallback={<ArticleGridSkeleton />}>

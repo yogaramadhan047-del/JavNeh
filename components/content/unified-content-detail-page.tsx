@@ -4,7 +4,7 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ContentPlayer } from "@/components/ui/content-player";
 import { MovieCard } from "@/components/ui/movie-card";
 import { MovieDetailBanner } from "@/components/ads/placements";
-import { Star, Clock, Calendar, Film, Tv } from "lucide-react";
+import { Star, Clock, Calendar, Film } from "lucide-react";
 import Markdown from "react-markdown";
 import Link from "next/link";
 
@@ -17,15 +17,13 @@ export function UnifiedContentDetailPage({
   content,
   relatedContent,
 }: UnifiedContentDetailPageProps) {
-  const isAnime = content.category === "Anime";
-  const categoryLabel = isAnime ? "Anime" : "Drama Jepang";
-  const categoryRoute = isAnime ? "/anime" : "/drama-jepang";
+  const categoryLabel = content.category || "Movie";
+  const categoryRoute = "/movies";
 
   const ratingVal = content.imdb || content.rating || 0;
   const displayRating = ratingVal > 0 ? Number(ratingVal).toFixed(1) : null;
 
-  // Schema.org Structured Data
-  const mediaType = content.isSeries ? "TVSeries" : "Movie";
+  const mediaType = "Movie";
   const mediaJsonLd = {
     "@context": "https://schema.org",
     "@type": mediaType,
@@ -39,9 +37,6 @@ export function UnifiedContentDetailPage({
     inLanguage: content.language || "Japanese",
     subtitleLanguage: content.subtitle || "Indonesian",
     duration: content.duration || undefined,
-    ...(content.isSeries && content.totalEpisodes
-      ? { numberOfEpisodes: content.totalEpisodes }
-      : {}),
     ...(ratingVal > 0
       ? {
           aggregateRating: {
@@ -68,7 +63,7 @@ export function UnifiedContentDetailPage({
       {
         "@type": "ListItem",
         position: 2,
-        name: categoryLabel,
+        name: "Movie",
         item: `${SITE_URL}${categoryRoute}`,
       },
       {
@@ -102,7 +97,7 @@ export function UnifiedContentDetailPage({
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
-              { label: categoryLabel, href: categoryRoute },
+              { label: "Movie", href: categoryRoute },
               { label: content.title },
             ]}
           />
@@ -110,7 +105,6 @@ export function UnifiedContentDetailPage({
           <div className="mt-6 flex flex-col gap-4">
             {/* Badges & Meta Row */}
             <div className="flex flex-wrap items-center gap-2">
-              {/* Category Pill: strictly public category name, NEVER "MOVIE" or "TV SERIES" */}
               <span className="px-2.5 py-1 bg-primary-blue text-white text-xs font-bold rounded">
                 {categoryLabel}
               </span>
@@ -166,12 +160,6 @@ export function UnifiedContentDetailPage({
                   {content.duration}
                 </span>
               )}
-              {content.totalEpisodes && content.totalEpisodes > 1 && (
-                <span className="flex items-center gap-1.5">
-                  <Tv className="w-4 h-4 text-primary-blue" />
-                  {content.totalEpisodes} Episode
-                </span>
-              )}
               {content.country && (
                 <span className="flex items-center gap-1.5">
                   <Film className="w-4 h-4 text-primary-blue" />
@@ -222,7 +210,7 @@ export function UnifiedContentDetailPage({
         <div>
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
             <span className="w-1.5 h-6 bg-primary-blue rounded-full"></span>
-            {isAnime ? "Anime Serupa" : "Drama Serupa"}
+            Rekomendasi Film Serupa
           </h2>
           {relatedContent && relatedContent.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -253,7 +241,7 @@ export function UnifiedContentDetailPage({
             </div>
           ) : (
             <p className="text-text-muted">
-              Tidak ada {isAnime ? "anime" : "drama"} serupa yang ditemukan.
+              Tidak ada film serupa yang ditemukan.
             </p>
           )}
         </div>

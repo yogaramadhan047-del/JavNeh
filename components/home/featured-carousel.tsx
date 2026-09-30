@@ -89,10 +89,7 @@ export function FeaturedCarousel({ initialItems }: FeaturedCarouselProps) {
       <div className="overflow-hidden rounded-2xl border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)]" ref={emblaRef}>
         <div className="flex touch-pan-y">
           {items.map((item) => {
-            const itemHref =
-              item.category === "Drama Jepang"
-                ? `/drama-jepang/${item.slug || item.id}`
-                : `/anime/${item.slug || item.id}`;
+            const itemHref = `/movies/${item.slug || item.id}`;
 
             const singleImage = item.bannerUrl || item.posterUrl || item.thumbnailUrl || "";
 

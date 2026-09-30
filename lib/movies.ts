@@ -24,12 +24,7 @@ function parseJsonArray<T>(val: unknown): T[] {
 export function mapMovieFromDb(row: Record<string, unknown> | null | undefined): Movie | null {
   if (!row) return null;
 
-  const rawCategory = row.category;
-  if (rawCategory !== "Anime" && rawCategory !== "Drama Jepang") {
-    // Strictly reject invalid, empty, or unassigned category records
-    return null;
-  }
-  const category: ContentCategory = rawCategory;
+  const category: ContentCategory = (row.category as string) || "Movie";
 
   const rawServers = parseJsonArray<MovieServer>(row.servers);
   const servers: MovieServer[] = rawServers.map((s, idx) => {
@@ -345,8 +340,8 @@ async function withTimeout<T>(
  */
 export async function createMovie(data: Omit<Movie, "id">): Promise<{ movie?: Movie; error?: string }> {
   try {
-    if (!data.category || (data.category !== "Anime" && data.category !== "Drama Jepang")) {
-      return { error: "Kategori utama wajib dipilih: 'Anime' atau 'Drama Jepang'" };
+    if (!data.category) {
+      return { error: "Kategori utama wajib dipilih" };
     }
 
     const now = new Date().toISOString();
@@ -402,10 +397,6 @@ export async function updateMovie(
   data: Partial<Movie>
 ): Promise<{ movie?: Movie; error?: string }> {
   try {
-    if (data.category !== undefined && data.category !== "Anime" && data.category !== "Drama Jepang") {
-      return { error: "Kategori harus berupa 'Anime' atau 'Drama Jepang'" };
-    }
-
     const payload = mapMovieToDb(data);
 
     const updateQuery = supabase
@@ -428,7 +419,7 @@ export async function updateMovie(
 
     const updatedMovie = updated
       ? mapMovieFromDb(updated)
-      : mapMovieFromDb({ ...payload, id, category: data.category || "Anime" });
+      : mapMovieFromDb({ ...payload, id, category: data.category || "Movie" });
 
     if (!updatedMovie) {
       return { error: "Data film yang diperbarui tidak valid atau memiliki kategori tidak sah" };

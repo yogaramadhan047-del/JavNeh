@@ -10,7 +10,7 @@ interface GenreScrollRowProps {
 export function GenreScrollRow({
   genres,
   activeGenre,
-  baseUrl = "/anime",
+  baseUrl = "/movies",
   allLabel = "Semua",
 }: GenreScrollRowProps) {
   if (!genres || genres.length === 0) return null;

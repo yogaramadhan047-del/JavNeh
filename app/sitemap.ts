@@ -4,52 +4,30 @@ import { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/constants";
 import { getArticles } from "@/lib/articles";
 import { getMovies } from "@/lib/movies";
-import { getSeriesList } from "@/lib/series";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_URL.replace(/\/$/, "");
   let articleEntries: MetadataRoute.Sitemap = [];
-  let animeMovieEntries: MetadataRoute.Sitemap = [];
-  let animeSeriesEntries: MetadataRoute.Sitemap = [];
-  let dramaMovieEntries: MetadataRoute.Sitemap = [];
-  let dramaSeriesEntries: MetadataRoute.Sitemap = [];
+  let movieEntries: MetadataRoute.Sitemap = [];
 
-  // Fetch all 5 content sets concurrently to maximize performance and avoid cold-start timeouts
+  // Fetch articles and movies concurrently
   let publishedArticles: Awaited<ReturnType<typeof getArticles>> = [];
-  let publishedAnimeMovies: Awaited<ReturnType<typeof getMovies>> = [];
-  let publishedDramaMovies: Awaited<ReturnType<typeof getMovies>> = [];
-  let publishedAnimeSeries: Awaited<ReturnType<typeof getSeriesList>> = [];
-  let publishedDramaSeries: Awaited<ReturnType<typeof getSeriesList>> = [];
+  let publishedMovies: Awaited<ReturnType<typeof getMovies>> = [];
 
   try {
-    const [articles, animeMovies, dramaMovies, animeSeries, dramaSeries] = await Promise.all([
+    const [articles, movies] = await Promise.all([
       getArticles({ status: "Published" }).catch((err) => {
         console.error("Error fetching articles for sitemap:", err);
         return [];
       }),
-      getMovies({ status: "Published", category: "Anime" }).catch((err) => {
-        console.error("Error fetching anime movies for sitemap:", err);
-        return [];
-      }),
-      getMovies({ status: "Published", category: "Drama Jepang" }).catch((err) => {
-        console.error("Error fetching drama movies for sitemap:", err);
-        return [];
-      }),
-      getSeriesList({ category: "Anime" }).catch((err) => {
-        console.error("Error fetching anime series for sitemap:", err);
-        return [];
-      }),
-      getSeriesList({ category: "Drama Jepang" }).catch((err) => {
-        console.error("Error fetching drama series for sitemap:", err);
+      getMovies({ status: "Published" }).catch((err) => {
+        console.error("Error fetching movies for sitemap:", err);
         return [];
       }),
     ]);
 
     publishedArticles = articles || [];
-    publishedAnimeMovies = animeMovies || [];
-    publishedDramaMovies = dramaMovies || [];
-    publishedAnimeSeries = animeSeries || [];
-    publishedDramaSeries = dramaSeries || [];
+    publishedMovies = movies || [];
   } catch (error) {
     console.error("Error running concurrent sitemap queries:", error);
   }
@@ -77,9 +55,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Error formatting articles for sitemap:", error);
   }
 
-  // 2. Movies (Anime & Drama Jepang) - Strictly Published only
+  // 2. Movies - Strictly Published only
   try {
-    animeMovieEntries = (publishedAnimeMovies || [])
+    movieEntries = (publishedMovies || [])
       .filter((m) => m.status === "Published" && (m.slug || m.id))
       .map((movie) => {
         const slug = encodeURIComponent(movie.slug || movie.id);
@@ -90,25 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           : new Date();
 
         return {
-          url: `${baseUrl}/anime/${slug}`,
-          lastModified: isNaN(lastMod.getTime()) ? new Date() : lastMod,
-          changeFrequency: "weekly" as const,
-          priority: 0.8,
-        };
-      });
-
-    dramaMovieEntries = (publishedDramaMovies || [])
-      .filter((m) => m.status === "Published" && (m.slug || m.id))
-      .map((movie) => {
-        const slug = encodeURIComponent(movie.slug || movie.id);
-        const lastMod = movie.updatedAt
-          ? new Date(movie.updatedAt)
-          : movie.createdAt
-          ? new Date(movie.createdAt)
-          : new Date();
-
-        return {
-          url: `${baseUrl}/drama-jepang/${slug}`,
+          url: `${baseUrl}/movies/${slug}`,
           lastModified: isNaN(lastMod.getTime()) ? new Date() : lastMod,
           changeFrequency: "weekly" as const,
           priority: 0.8,
@@ -116,47 +76,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
   } catch (error) {
     console.error("Error formatting movies for sitemap:", error);
-  }
-
-  // 3. Series (Anime & Drama Jepang) - Non-Draft only (Ongoing & Completed)
-  try {
-    animeSeriesEntries = (publishedAnimeSeries || [])
-      .filter((s) => s.status !== "Draft" && (s.slug || s.id))
-      .map((series) => {
-        const slug = encodeURIComponent(series.slug || series.id);
-        const lastMod = series.updatedAt
-          ? new Date(series.updatedAt)
-          : series.createdAt
-          ? new Date(series.createdAt)
-          : new Date();
-
-        return {
-          url: `${baseUrl}/anime/${slug}`,
-          lastModified: isNaN(lastMod.getTime()) ? new Date() : lastMod,
-          changeFrequency: "weekly" as const,
-          priority: 0.8,
-        };
-      });
-
-    dramaSeriesEntries = (publishedDramaSeries || [])
-      .filter((s) => s.status !== "Draft" && (s.slug || s.id))
-      .map((series) => {
-        const slug = encodeURIComponent(series.slug || series.id);
-        const lastMod = series.updatedAt
-          ? new Date(series.updatedAt)
-          : series.createdAt
-          ? new Date(series.createdAt)
-          : new Date();
-
-        return {
-          url: `${baseUrl}/drama-jepang/${slug}`,
-          lastModified: isNaN(lastMod.getTime()) ? new Date() : lastMod,
-          changeFrequency: "weekly" as const,
-          priority: 0.8,
-        };
-      });
-  } catch (error) {
-    console.error("Error formatting series for sitemap:", error);
   }
 
   // Static core routes
@@ -168,13 +87,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/anime`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/drama-jepang`,
+      url: `${baseUrl}/movies`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
@@ -213,10 +126,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const allEntries = [
     ...staticRoutes,
-    ...animeMovieEntries,
-    ...animeSeriesEntries,
-    ...dramaMovieEntries,
-    ...dramaSeriesEntries,
+    ...movieEntries,
     ...articleEntries,
   ];
 

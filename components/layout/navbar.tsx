@@ -9,8 +9,7 @@ import { SidebarBanner } from "@/components/ads/placements";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/anime", label: "Anime" },
-  { href: "/drama-jepang", label: "Drama Jepang" },
+  { href: "/movies", label: "Movie" },
   { href: "/artikel", label: "Artikel" },
 ];
 

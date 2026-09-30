@@ -1,23 +1,16 @@
 import { getMovies } from "./movies";
-import { getSeriesList } from "./series";
 import { MovieCardItem } from "@/components/ui/movie-card";
 
 /**
- * Fetch strictly Hot items (Movies and Series) for Hero Carousel.
+ * Fetch strictly Hot items (Movies) for Hero Carousel.
  * Only published content with badge === "Hot" (case-insensitive) is returned.
  * Zero fallback to other badges or non-hot content.
  */
 export async function getHotCarouselItems(): Promise<MovieCardItem[]> {
   try {
-    const [movies, seriesList] = await Promise.all([
-      getMovies({ status: "Published", badge: "Hot", limit: 12 }).catch(() => []),
-      getSeriesList({ badge: "Hot", limit: 12 }).catch(() => []),
-    ]);
+    const movies = await getMovies({ status: "Published", badge: "Hot", limit: 12 }).catch(() => []);
 
-    const combined: MovieCardItem[] = [
-      ...movies.map((m) => ({ ...m, isSeries: false })),
-      ...seriesList.map((s) => ({ ...s, isSeries: true })),
-    ];
+    const combined: MovieCardItem[] = movies.map((m) => ({ ...m, isSeries: false }));
 
     // Strict filter: badge must be "Hot" (case-insensitive for safety)
     const hotOnly = combined.filter(

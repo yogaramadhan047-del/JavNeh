@@ -1,6 +1,6 @@
 import { DbTimestamp } from "./supabase";
 
-export type ContentCategory = "Anime" | "Drama Jepang";
+export type ContentCategory = string;
 
 export const BADGE_OPTIONS = ["New", "Top", "Hot"] as const;
 export type BadgeType = (typeof BADGE_OPTIONS)[number];

@@ -39,9 +39,7 @@ export function MovieCard({ movie, baseUrl, basePath, priority = false }: MovieC
   const ratingVal = movie.imdb || movie.rating;
   const displayRating = ratingVal && ratingVal > 0 ? Number(ratingVal).toFixed(1) : null;
 
-  const isJapaneseDrama = movie.category === "Drama Jepang";
-
-  const targetPrefix = baseUrl || basePath || (isJapaneseDrama ? "/drama-jepang" : "/anime");
+  const targetPrefix = baseUrl || basePath || "/movies";
   const href = `${targetPrefix}/${movie.slug || movie.id}`;
 
   // Image source priority: bannerUrl first for landscape format, falling back to thumbnailUrl or posterUrl
