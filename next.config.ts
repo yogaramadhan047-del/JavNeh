@@ -68,23 +68,33 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
-        source: '/movies',
-        destination: '/anime',
+        source: '/anime',
+        destination: '/movies',
         permanent: true,
       },
       {
-        source: '/movies/:slug',
-        destination: '/anime/:slug',
+        source: '/anime/:slug',
+        destination: '/movies/:slug',
+        permanent: true,
+      },
+      {
+        source: '/drama-jepang',
+        destination: '/movies',
+        permanent: true,
+      },
+      {
+        source: '/drama-jepang/:slug',
+        destination: '/movies/:slug',
         permanent: true,
       },
       {
         source: '/series',
-        destination: '/drama-jepang',
+        destination: '/movies',
         permanent: true,
       },
       {
         source: '/series/:slug',
-        destination: '/drama-jepang/:slug',
+        destination: '/movies/:slug',
         permanent: true,
       },
     ];

@@ -1,5 +1,3 @@
-export const revalidate = 43200; // 12 Hours ISR Caching
-
 import { SITE_URL } from "@/lib/constants";
 import { Metadata } from "next";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
@@ -10,6 +8,8 @@ import { getMovies, getGenres } from "@/lib/movies";
 import { supabase } from "@/lib/supabase";
 import { Film } from "lucide-react";
 import { Movie } from "@/types/movie";
+
+export const revalidate = 43200;
 
 const ITEMS_PER_PAGE = 10;
 
@@ -53,20 +53,28 @@ export async function generateMetadata({
   };
 }
 
-async function getMoviesTotalCount(genre?: string): Promise<number> {
+async function getMoviesTotalCount(genre?: string, status?: string): Promise<number> {
   try {
     let query = supabase
       .from("movies")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "Published");
+      .select("id", { count: "exact", head: true });
+
+    if (status) {
+      query = query.eq("status", status);
+    }
 
     if (genre) {
       query = query.contains("genres", [genre]);
     }
 
-    const { count } = await query;
+    const { count, error } = await query;
+    if (error) {
+      console.error("Error fetching movies count:", error);
+      return 0;
+    }
     return count || 0;
-  } catch {
+  } catch (err) {
+    console.error("Exception in getMoviesTotalCount:", err);
     return 0;
   }
 }
@@ -79,32 +87,58 @@ export default async function MoviesPage({
   const { genre, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
 
-  // Fetch range using exact range parameters for 10 items
   const from = (currentPage - 1) * ITEMS_PER_PAGE;
   const to = from + ITEMS_PER_PAGE - 1;
 
-  const [genres, movies, totalCount] = await Promise.all([
-    getGenres(),
-    getMovies({
+  // Fetch genres
+  const genres = await getGenres().catch(() => []);
+
+  // Try fetching with Published status first
+  let movies: Movie[] = [];
+  let totalCount = 0;
+
+  try {
+    movies = await getMovies({
       genre,
       status: "Published",
       from,
       to,
-    }).catch(() => []),
-    getMoviesTotalCount(genre),
-  ]);
+    });
+    totalCount = await getMoviesTotalCount(genre, "Published");
+  } catch (err) {
+    console.error("Failed fetching published movies, attempting fallback:", err);
+  }
 
-  // Deduplicate and filter (getMovies returns mapped/validated movies)
+  // Fallback: If zero published movies, fetch all movies without status restriction
+  if (!movies || movies.length === 0) {
+    try {
+      movies = await getMovies({
+        genre,
+        from,
+        to,
+      });
+      totalCount = await getMoviesTotalCount(genre);
+    } catch (err) {
+      console.error("Failed fetching fallback movies:", err);
+      movies = [];
+      totalCount = 0;
+    }
+  }
+
+  // Ensure unique movies list and filter null/undefined
   const uniqueMovies: Movie[] = [];
   const seenIds = new Set<string>();
   const seenSlugs = new Set<string>();
 
-  for (const item of movies) {
-    if (seenIds.has(item.id)) continue;
-    if (item.slug && seenSlugs.has(item.slug)) continue;
-    seenIds.add(item.id);
-    if (item.slug) seenSlugs.add(item.slug);
-    uniqueMovies.push(item);
+  if (Array.isArray(movies)) {
+    for (const item of movies) {
+      if (!item || !item.id) continue;
+      if (seenIds.has(item.id)) continue;
+      if (item.slug && seenSlugs.has(item.slug)) continue;
+      seenIds.add(item.id);
+      if (item.slug) seenSlugs.add(item.slug);
+      uniqueMovies.push(item);
+    }
   }
 
   const totalPages = totalCount > 0 ? Math.ceil(totalCount / ITEMS_PER_PAGE) : 1;
@@ -167,14 +201,16 @@ export default async function MoviesPage({
           </div>
         </div>
 
-        <GenreScrollRow
-          genres={genres}
-          activeGenre={genre}
-          baseUrl="/movies"
-          allLabel="Semua Film"
-        />
+        {Array.isArray(genres) && genres.length > 0 && (
+          <GenreScrollRow
+            genres={genres}
+            activeGenre={genre}
+            baseUrl="/movies"
+            allLabel="Semua Film"
+          />
+        )}
 
-        {uniqueMovies.length > 0 ? (
+        {uniqueMovies && uniqueMovies.length > 0 ? (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-4 sm:gap-6 w-full max-w-full">
               {uniqueMovies.map((movie) => (
