@@ -14,7 +14,7 @@ export function ApologyModal() {
   );
 
   useEffect(() => {
-    const hasSeen = typeof window !== "undefined" ? sessionStorage.getItem("xstream21_apology_dismissed") : null;
+    const hasSeen = typeof window !== "undefined" ? sessionStorage.getItem("javneh_apology_dismissed") : null;
     if (!hasSeen) {
       const timer = setTimeout(() => {
         setIsOpen(true);
@@ -26,7 +26,7 @@ export function ApologyModal() {
   const handleClose = () => {
     setIsOpen(false);
     if (typeof window !== "undefined") {
-      sessionStorage.setItem("xstream21_apology_dismissed", "true");
+      sessionStorage.setItem("javneh_apology_dismissed", "true");
     }
   };
 
@@ -50,12 +50,12 @@ export function ApologyModal() {
             <Heart className="w-6 h-6 fill-primary-blue/20" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-4">Catatan dari Tim XStream21</h2>
+          <h2 className="text-xl font-bold text-white mb-4">Catatan dari Tim JavNeh</h2>
 
           <div className="space-y-3 text-sm text-text-muted leading-relaxed mb-8">
-            <p>Selamat datang di XStream21!</p>
+            <p>Selamat datang di JavNeh!</p>
             <p>
-              Kami segenap tim XStream21 ingin menyampaikan permohonan maaf yang sebesar-besarnya apabila
+              Kami segenap tim JavNeh ingin menyampaikan permohonan maaf yang sebesar-besarnya apabila
               banyaknya iklan yang tampil sempat mengganggu kenyamanan Anda saat menikmati hiburan.
             </p>
             <p>

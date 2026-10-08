@@ -22,11 +22,11 @@ export async function generateMetadata({
   const pageNum = Math.max(1, parseInt(page || "1", 10) || 1);
   const pageSuffix = pageNum > 1 ? ` - Halaman ${pageNum}` : "";
   const title = genre
-    ? `Nonton Movie Genre ${genre} Subtitle Indonesia${pageSuffix} - XStream21`
-    : `Nonton Film & Movie Subtitle Indonesia Terbaru${pageSuffix} - XStream21`;
+    ? `Nonton Movie Genre ${genre} Subtitle Indonesia${pageSuffix} - JavNeh`
+    : `Nonton Film & Movie Subtitle Indonesia Terbaru${pageSuffix} - JavNeh`;
   const description = genre
-    ? `Streaming & download film dan movie genre ${genre} subtitle Indonesia terlengkap and terupdate gratis di XStream21.`
-    : "Koleksi film & movie subtitle Indonesia terlengkap dari berbagai genre, box office, dan film bioskop terupdate di XStream21.";
+    ? `Streaming & download film dan movie genre ${genre} subtitle Indonesia terlengkap and terupdate gratis di JavNeh.`
+    : "Koleksi film & movie subtitle Indonesia terlengkap dari berbagai genre, box office, dan film bioskop terupdate di JavNeh.";
 
   const canonicalUrl = `${SITE_URL}/movies${
     genre
@@ -46,7 +46,7 @@ export async function generateMetadata({
       title,
       description,
       url: canonicalUrl,
-      siteName: "XStream21",
+      siteName: "JavNeh",
       locale: "id_ID",
       type: "website",
     },

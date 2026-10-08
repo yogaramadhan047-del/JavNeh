@@ -7,10 +7,10 @@ export default function AboutPage() {
       <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "About" }]} />
 
       <div className="prose prose-invert max-w-none">
-        <h1 className="text-4xl font-bold text-text-main mb-6">Tentang XStream21</h1>
+        <h1 className="text-4xl font-bold text-text-main mb-6">Tentang JavNeh</h1>
 
         <p className="text-lg text-text-muted-hover mb-8 leading-relaxed">
-          XStream21 adalah platform streaming film dan serial TV gratis yang berdedikasi untuk memberikan pengalaman
+          JavNeh adalah platform streaming film gratis yang berdedikasi untuk memberikan pengalaman
           menonton terbaik bagi pengguna di Indonesia. Kami menyediakan koleksi film terbaru dan terpopuler dengan
           subtitle Indonesia yang berkualitas.
         </p>
@@ -20,7 +20,7 @@ export default function AboutPage() {
               <Film className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-bold text-text-main mb-2">Koleksi Lengkap</h3>
-            <p className="text-text-muted">Ribuan judul film dan series dari berbagai genre siap menemani waktu luang Anda.</p>
+            <p className="text-text-muted">Ribuan judul film dari berbagai genre siap menemani waktu luang Anda.</p>
           </div>
           <div className="bg-card-dark p-6 rounded-xl border border-border-dark">
             <div className="w-12 h-12 bg-primary-blue/10 rounded-lg flex items-center justify-center text-primary-blue mb-4">
@@ -46,7 +46,7 @@ export default function AboutPage() {
         </div>
         <h2 className="text-2xl font-bold text-text-main mb-4">Misi Kami</h2>
         <p className="text-text-muted-hover leading-relaxed mb-6">
-          Kami percaya bahwa hiburan berkualitas harus dapat diakses oleh semua orang. Oleh karena itu, XStream21 terus
+          Kami percaya bahwa hiburan berkualitas harus dapat diakses oleh semua orang. Oleh karena itu, JavNeh terus
           berinovasi untuk menghadirkan antarmuka pengguna yang modern, bersih, dan mudah digunakan di berbagai perangkat,
           baik desktop maupun mobile.
         </p>

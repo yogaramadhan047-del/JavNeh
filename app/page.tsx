@@ -19,19 +19,19 @@ import { getHotCarouselItems } from "@/lib/carousel";
 import { HeaderBanners } from "@/components/ads/placements";
 
 export const metadata: Metadata = {
-  title: "XStream21 - Nonton Film & Movie Subtitle Indonesia Terbaru",
+  title: "JavNeh - Nonton Film & Movie Subtitle Indonesia Terbaru",
   description: "Platform streaming film dan movie subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
   openGraph: {
-    title: "XStream21 - Nonton Film & Movie Subtitle Indonesia Terbaru",
+    title: "JavNeh - Nonton Film & Movie Subtitle Indonesia Terbaru",
     description: "Platform streaming film dan movie subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
     url: SITE_URL,
-    siteName: "XStream21",
+    siteName: "JavNeh",
     images: [
       {
         url: `${SITE_URL}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: "XStream21",
+        alt: "JavNeh",
       },
     ],
     locale: "id_ID",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "XStream21 - Nonton Film & Movie Subtitle Indonesia Terbaru",
+    title: "JavNeh - Nonton Film & Movie Subtitle Indonesia Terbaru",
     description: "Platform streaming film dan movie subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
     images: [`${SITE_URL}/og-image.jpg`],
   },
@@ -191,19 +191,19 @@ export default function Home() {
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      name: "XStream21",
+      name: "JavNeh",
       url: SITE_URL,
       logo: `${SITE_URL}/favicon.ico`,
       sameAs: [
-        "https://twitter.com/xstream21",
-        "https://instagram.com/xstream21",
-        "https://facebook.com/xstream21",
+        "https://twitter.com/javneh",
+        "https://instagram.com/javneh",
+        "https://facebook.com/javneh",
       ],
     },
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: "XStream21",
+      name: "JavNeh",
       url: SITE_URL,
       potentialAction: {
         "@type": "SearchAction",

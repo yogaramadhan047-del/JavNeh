@@ -87,8 +87,8 @@ export function AntiAdBlock() {
           <h2 className="text-2xl font-bold text-white mb-4">Ad-Block Detected!</h2>
 
           <p className="text-text-muted mb-8 text-sm leading-relaxed">
-            Please disable your ad-blocker to support <strong className="text-white">XStream21</strong> and continue
-            streaming. We rely on ads to keep the servers running and provide you with free HD anime & drama.
+            Please disable your ad-blocker to support <strong className="text-white">JavNeh</strong> and continue
+            streaming. We rely on ads to keep the servers running and provide you with free HD movies.
           </p>
 
           <button

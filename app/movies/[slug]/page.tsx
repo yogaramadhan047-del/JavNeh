@@ -18,12 +18,12 @@ export async function generateMetadata({
 
   if (!content) {
     return {
-      title: "Movie Tidak Ditemukan - XStream21",
+      title: "Movie Tidak Ditemukan - JavNeh",
     };
   }
 
-  const title = `${content.seoTitle || `Nonton ${content.title} Sub Indo Terbaru`} - XStream21`;
-  const description = content.seoDescription || content.synopsis?.slice(0, 160) || `Streaming & download film ${content.title} subtitle Indonesia kualitas HD gratis di XStream21.`;
+  const title = `${content.seoTitle || `Nonton ${content.title} Sub Indo Terbaru`} - JavNeh`;
+  const description = content.seoDescription || content.synopsis?.slice(0, 160) || `Streaming & download film ${content.title} subtitle Indonesia kualitas HD gratis di JavNeh.`;
 
   return {
     title,
@@ -36,7 +36,7 @@ export async function generateMetadata({
       title,
       description,
       url: `${SITE_URL}/movies/${content.slug}`,
-      siteName: "XStream21",
+      siteName: "JavNeh",
       images: [
         {
           url: content.imageUrl || `${SITE_URL}/og-image.jpg`,

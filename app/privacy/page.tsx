@@ -8,7 +8,7 @@ export default function PrivacyPage() {
       <div className="prose prose-invert max-w-none text-text-muted-hover">
         <p className="mb-4">
           Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi
-          Anda saat menggunakan situs XStream21.
+          Anda saat menggunakan situs JavNeh.
         </p>
         <h2 className="text-2xl font-bold text-text-main mt-8 mb-4">Pengumpulan Informasi</h2>
         <p className="mb-4">

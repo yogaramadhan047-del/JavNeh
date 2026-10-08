@@ -123,7 +123,7 @@ export function AdminHeader({ setSidebarOpen }: AdminHeaderProps) {
             <div className="absolute right-0 top-full mt-2 w-48 bg-card-dark border border-border-dark rounded-xl shadow-2xl overflow-hidden py-1 z-50">
               <div className="px-4 py-3 border-b border-border-dark mb-1">
                 <p className="text-sm font-medium text-white">Admin User</p>
-                <p className="text-xs text-gray-400 truncate">admin@xstream21.my.id</p>
+                <p className="text-xs text-gray-400 truncate">admin@javneh.com</p>
               </div>
               <Link
                 href="/admin/profile"

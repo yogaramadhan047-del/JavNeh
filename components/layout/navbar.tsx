@@ -53,8 +53,8 @@ export function Navbar() {
               href="/"
               className="text-2xl font-bold tracking-tighter hover:opacity-80 transition-opacity flex items-center"
             >
-              <span className="text-white">XStream</span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-blue to-blue-400">21</span>
+              <span className="text-white">Jav</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-blue to-blue-400">Neh</span>
             </Link>
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
               {NAV_LINKS.map((link) => {

@@ -470,7 +470,7 @@ export function MovieForm({ initialData, isEdit = false }: MovieFormProps) {
               value={formData.seoTitle}
               onChange={(e) => setFormData((prev) => ({ ...prev, seoTitle: e.target.value }))}
               disabled={isFormDisabled}
-              placeholder="Contoh: Nonton Kimi no Na wa Sub Indo Kualitas HD - XStream21"
+              placeholder="Contoh: Nonton Kimi no Na wa Sub Indo Kualitas HD - JavNeh"
               className="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary-blue text-sm"
             />
           </div>

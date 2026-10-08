@@ -3,13 +3,13 @@ import { SiteSettings } from "@/types/settings";
 import { AdvertisementSettings } from "@/types/advertisement";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  siteName: "XStream21",
-  siteDescription: "Nonton anime dan drama Jepang gratis subtitle Indonesia",
-  siteUrl: "https://xstream21.my.id",
+  siteName: "JavNeh",
+  siteDescription: "Platform streaming film dan movie subtitle Indonesia terlengkap gratis",
+  siteUrl: "https://javneh.com",
   faviconUrl: "",
   googleAnalyticsId: "",
   googleSearchConsole: "",
-  metaKeywords: "xstream21, nonton anime, drama jepang, dorama, anime sub indo",
+  metaKeywords: "javneh, nonton movie, film sub indo, streaming movie indonesia, film hd gratis",
   bannerText: "",
   bannerActive: false,
 };

@@ -26,10 +26,8 @@ import { useEffect } from "react";
 
 const MENU_ITEMS = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { label: "Anime", href: "/admin/movies", icon: Film },
-  { label: "Add Anime", href: "/admin/movies/add", icon: PlusSquare },
-  { label: "Drama Jepang", href: "/admin/series", icon: Tv },
-  { label: "Add Drama", href: "/admin/series/add", icon: PlusSquare },
+  { label: "Movie", href: "/admin/movies", icon: Film },
+  { label: "Add Movie", href: "/admin/movies/add", icon: PlusSquare },
   { label: "Genres", href: "/admin/genres", icon: Tags },
   { label: "Artikel", href: "/admin/articles", icon: FileText },
   { label: "Add Artikel", href: "/admin/articles/add", icon: FilePlus },
@@ -91,7 +89,7 @@ export function AdminSidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }:
         <div className="h-16 flex items-center justify-between px-4 border-b border-border-dark shrink-0">
           <div className="flex items-center gap-3 overflow-hidden">
             <Film className="w-8 h-8 text-primary-blue shrink-0" />
-            {!isCollapsed && <span className="font-bold text-xl tracking-tight text-white whitespace-nowrap">XStream21 CMS</span>}
+            {!isCollapsed && <span className="font-bold text-xl tracking-tight text-white whitespace-nowrap">JavNeh CMS</span>}
           </div>
           <button
             className="md:hidden text-gray-400 hover:text-white cursor-pointer"

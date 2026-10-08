@@ -21,7 +21,7 @@ export async function generateMetadata({
 
   if (!article) {
     return {
-      title: "Artikel Tidak Ditemukan - XStream21",
+      title: "Artikel Tidak Ditemukan - JavNeh",
       alternates: { canonical: `${SITE_URL}/artikel/${slug}` },
     };
   }
@@ -29,11 +29,11 @@ export async function generateMetadata({
   // Strictly prioritize Admin-provided SEO Title & Description
   const title = article.seoTitle?.trim()
     ? article.seoTitle.trim()
-    : `${article.title} - XStream21`;
+    : `${article.title} - JavNeh`;
 
   const description = article.seoDescription?.trim()
     ? article.seoDescription.trim()
-    : article.excerpt?.slice(0, 160) || "Baca ulasan, rekomendasi, dan berita anime & drama Jepang terbaru di XStream21.";
+    : article.excerpt?.slice(0, 160) || "Baca ulasan, rekomendasi, dan berita film & movie terbaru di JavNeh.";
 
   const bannerImage = article.bannerUrl || article.thumbnailUrl || `${SITE_URL}/og-image.jpg`;
   const canonicalUrl = `${SITE_URL}/artikel/${article.slug || slug}`;
@@ -53,7 +53,7 @@ export async function generateMetadata({
       title,
       description,
       url: canonicalUrl,
-      siteName: "XStream21",
+      siteName: "JavNeh",
       images: [
         {
           url: bannerImage,
@@ -118,7 +118,7 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
     ],
     publisher: {
       "@type": "Organization",
-      name: "XStream21",
+      name: "JavNeh",
       logo: {
         "@type": "ImageObject",
         url: `${SITE_URL}/favicon.ico`,

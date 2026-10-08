@@ -13,16 +13,16 @@ import { Newspaper } from "lucide-react";
 const ITEMS_PER_PAGE = 10;
 
 export const metadata: Metadata = {
-  title: "Artikel & Berita Film Terbaru - XStream21",
-  description: "Baca artikel berita, review, sinopsis, dan rekomendasi film terbaru hanya di XStream21.",
+  title: "Artikel & Berita Film Terbaru - JavNeh",
+  description: "Baca artikel berita, review, sinopsis, dan rekomendasi film terbaru hanya di JavNeh.",
   alternates: {
     canonical: `${SITE_URL}/artikel`,
   },
   openGraph: {
-    title: "Artikel & Berita Film Terbaru - XStream21",
-    description: "Baca artikel berita, review, sinopsis, dan rekomendasi film terbaru hanya di XStream21.",
+    title: "Artikel & Berita Film Terbaru - JavNeh",
+    description: "Baca artikel berita, review, sinopsis, dan rekomendasi film terbaru hanya di JavNeh.",
     url: `${SITE_URL}/artikel`,
-    siteName: "XStream21",
+    siteName: "JavNeh",
     locale: "id_ID",
     type: "website",
   },
@@ -115,7 +115,7 @@ export default async function ArtikelPage({
 
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-text-main tracking-tight mb-2">Artikel XStream21</h1>
+            <h1 className="text-3xl font-bold text-text-main tracking-tight mb-2">Artikel JavNeh</h1>
             <p className="text-text-muted">Baca review, sinopsis, dan update berita terbaru seputar film & movie terbaru.</p>
           </div>
         </div>

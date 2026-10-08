@@ -5,13 +5,13 @@ export function Footer() {
     <footer className="border-t border-border-dark bg-card-dark py-8 mt-12">
       <div className="max-w-7xl mx-auto px-4 text-center">
         <h2 className="text-2xl font-bold tracking-tighter mb-4 flex items-center justify-center">
-          <span className="text-white">XStream</span>
+          <span className="text-white">Jav</span>
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-blue to-blue-400">
-            21
+            Neh
           </span>
         </h2>
         <p className="text-text-muted text-sm max-w-md mx-auto mb-6">
-          Streaming ribuan film dan series subtitle Indonesia secara gratis. Temukan tontonan favoritmu sekarang.
+          Streaming ribuan film dan movie subtitle Indonesia secara gratis. Temukan tontonan favoritmu sekarang.
         </p>
         <div className="flex flex-wrap justify-center gap-4 text-sm font-medium text-text-muted-hover">
           <Link href="/about" className="hover:text-text-main transition-colors">About</Link>
@@ -21,7 +21,7 @@ export function Footer() {
           <Link href="/admin/login" className="hover:text-text-main transition-colors">Admin Login</Link>
         </div>
         <div className="mt-8 text-xs text-text-muted">
-          &copy; {new Date().getFullYear()} XStream21. All rights reserved.
+          &copy; {new Date().getFullYear()} JavNeh. All rights reserved.
         </div>
       </div>
     </footer>

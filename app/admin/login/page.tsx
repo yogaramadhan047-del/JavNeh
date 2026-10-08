@@ -57,7 +57,7 @@ export default function AdminLogin() {
             <Film className="w-8 h-8" />
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Admin Panel</h1>
-          <p className="text-gray-400 text-sm">Masuk untuk mengelola konten XStream21.</p>
+          <p className="text-gray-400 text-sm">Masuk untuk mengelola konten JavNeh.</p>
         </div>
         {error && (
           <div className="mb-6 bg-danger/10 border border-danger/20 text-danger p-4 rounded-xl flex items-start gap-3 text-sm">
@@ -75,7 +75,7 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-background-dark border border-border-dark rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent transition-all"
-                placeholder="admin@xstream21.com"
+                placeholder="admin@javneh.com"
                 required
               />
             </div>

@@ -7,11 +7,11 @@ export default function TermsPage() {
       <h1 className="text-4xl font-bold text-text-main mb-6">Syarat & Ketentuan</h1>
       <div className="prose prose-invert max-w-none text-text-muted-hover">
         <p className="mb-4">
-          Dengan mengakses dan menggunakan situs XStream21, Anda menyetujui syarat dan ketentuan berikut:
+          Dengan mengakses dan menggunakan situs JavNeh, Anda menyetujui syarat dan ketentuan berikut:
         </p>
         <h2 className="text-2xl font-bold text-text-main mt-8 mb-4">Penggunaan Layanan</h2>
         <p className="mb-4">
-          Layanan XStream21 disediakan secara gratis untuk keperluan hiburan. Anda tidak diperkenankan menggunakan situs ini
+          Layanan JavNeh disediakan secara gratis untuk keperluan hiburan. Anda tidak diperkenankan menggunakan situs ini
           untuk tujuan ilegal.
         </p>
       </div>
