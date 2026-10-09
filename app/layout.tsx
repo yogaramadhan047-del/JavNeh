@@ -23,7 +23,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase: new URL('https://javneh.com'),
   title: {
     default: `${SITE_NAME} - Nonton Film & Movie Subtitle Indonesia Terbaru`,
     template: `%s | ${SITE_NAME}`,
@@ -59,13 +59,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: SITE_URL,
+    url: "https://javneh.com",
     title: `${SITE_NAME} - Nonton Film & Movie Subtitle Indonesia Terbaru`,
     description: SITE_DESCRIPTION,
     siteName: SITE_NAME,
     images: [
       {
-        url: `${SITE_URL}/og-image.jpg`,
+        url: "https://javneh.com/og-image.jpg",
         width: 1200,
         height: 630,
         alt: `${SITE_NAME} - Streaming Film & Movie Terbaru`,
@@ -76,10 +76,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} - Nonton Film & Movie Subtitle Indonesia Terbaru`,
     description: SITE_DESCRIPTION,
-    images: [`${SITE_URL}/og-image.jpg`],
+    images: ["https://javneh.com/og-image.jpg"],
   },
   alternates: {
-    canonical: SITE_URL,
+    canonical: 'https://javneh.com',
   },
 };
 
