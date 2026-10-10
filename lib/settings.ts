@@ -4,18 +4,18 @@ import { AdvertisementSettings } from "@/types/advertisement";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   siteName: "JavNeh",
-  siteDescription: "Platform streaming film dan movie subtitle Indonesia terlengkap gratis",
+  siteDescription: "Platform streaming film JAV subtitle Indonesia terlengkap gratis",
   siteUrl: "https://javneh.com",
   faviconUrl: "",
   googleAnalyticsId: "",
   googleSearchConsole: "",
-  metaKeywords: "javneh, nonton movie, film sub indo, streaming movie indonesia, film hd gratis",
+  metaKeywords: "javneh, JAV, Njavtv, JavHD, Miss Av, Javxsub, Ngejav, Javhey, Javsubid, Yabaisub, Javtiful, Rumah Perjala, nonton movie, film sub indo, streaming movie indonesia, film hd gratis",
   bannerText: "",
   bannerActive: false,
 };
 
 export const OFFICIAL_ADSTERRA_POPUNDER_URL =
-  "https://cowardrainbowactual.com/f0/9b/f6/f09bf6d358c6da2677e46c32a14ee25c.js";
+  "https://cowardrainbowactual.com/bb/1a/14/bb1a14799b133de2a596c5960663b6ae.js";
 export const OFFICIAL_ADSTERRA_POPUNDER_SCRIPT = `<script src="${OFFICIAL_ADSTERRA_POPUNDER_URL}"></script>`;
 
 export const DEFAULT_AD_SETTINGS: AdvertisementSettings = {
