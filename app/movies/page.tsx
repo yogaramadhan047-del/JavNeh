@@ -9,7 +9,7 @@ import { supabase } from "@/lib/supabase";
 import { Film } from "lucide-react";
 import { Movie } from "@/types/movie";
 
-export const revalidate = 43200;
+export const revalidate = 0;
 
 const ITEMS_PER_PAGE = 10;
 
@@ -23,10 +23,10 @@ export async function generateMetadata({
   const pageSuffix = pageNum > 1 ? ` - Halaman ${pageNum}` : "";
   const title = genre
     ? `Nonton Movie Genre ${genre} Subtitle Indonesia${pageSuffix} - JavNeh`
-    : `Nonton Film & Movie Subtitle Indonesia Terbaru${pageSuffix} - JavNeh`;
+    : `Nonton Film JAV Subtitle Indonesia Terbaru${pageSuffix} - JavNeh`;
   const description = genre
-    ? `Streaming & download film dan movie genre ${genre} subtitle Indonesia terlengkap and terupdate gratis di JavNeh.`
-    : "Koleksi film & movie subtitle Indonesia terlengkap dari berbagai genre, box office, dan film bioskop terupdate di JavNeh.";
+    ? `Streaming & download film JAV genre ${genre} subtitle Indonesia terlengkap and terupdate gratis di JavNeh.`
+    : "Koleksi film JAV subtitle Indonesia terlengkap dari berbagai genre, box office, dan film bioskop terupdate di JavNeh.";
 
   const canonicalUrl = `${SITE_URL}/movies${
     genre
