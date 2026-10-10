@@ -4,7 +4,7 @@ import { UnifiedContentDetailPage } from "@/components/content/unified-content-d
 import { Metadata } from "next";
 import { SITE_URL } from "@/lib/constants";
 
-export const revalidate = 43200; // 12 Hours ISR Caching
+export const revalidate = 0; // 12 Hours ISR Caching
 
 interface MovieDetailPageProps {
   params: Promise<{ slug: string }>;
