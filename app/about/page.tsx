@@ -10,8 +10,8 @@ export default function AboutPage() {
         <h1 className="text-4xl font-bold text-text-main mb-6">Tentang JavNeh</h1>
 
         <p className="text-lg text-text-muted-hover mb-8 leading-relaxed">
-          JavNeh adalah platform streaming film gratis yang berdedikasi untuk memberikan pengalaman
-          menonton terbaik bagi pengguna di Indonesia. Kami menyediakan koleksi film terbaru dan terpopuler dengan
+          JavNeh adalah platform streaming film JAV gratis yang berdedikasi untuk memberikan pengalaman
+          menonton terbaik bagi pengguna di Indonesia. Kami menyediakan koleksi film JAV terbaru dan terpopuler dengan
           subtitle Indonesia yang berkualitas.
         </p>
         <div className="grid sm:grid-cols-2 gap-6 mb-12">
