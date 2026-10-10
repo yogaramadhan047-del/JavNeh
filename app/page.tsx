@@ -1,4 +1,4 @@
-export const revalidate = 43200; // 12 Hours ISR Caching
+export const revalidate = 0; // 12 Hours ISR Caching
 
 import { SITE_URL } from "@/lib/constants";
 import { Metadata } from "next";
@@ -19,11 +19,11 @@ import { getHotCarouselItems } from "@/lib/carousel";
 import { HeaderBanners } from "@/components/ads/placements";
 
 export const metadata: Metadata = {
-  title: "JavNeh - Nonton Film & Movie Subtitle Indonesia Terbaru",
-  description: "Platform streaming film dan movie subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
+  title: "JavNeh - Nonton Film JAV Subtitle Indonesia Terbaru Terlengkap",
+  description: "Platform streaming film JAV subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
   openGraph: {
-    title: "JavNeh - Nonton Film & Movie Subtitle Indonesia Terbaru",
-    description: "Platform streaming film dan movie subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
+    title: "JavNeh - Nonton Film JAV Subtitle Indonesia Terbaru",
+    description: "Platform streaming film JAV subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
     url: SITE_URL,
     siteName: "JavNeh",
     images: [
