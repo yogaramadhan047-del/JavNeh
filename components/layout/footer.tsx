@@ -11,7 +11,7 @@ export function Footer() {
           </span>
         </h2>
         <p className="text-text-muted text-sm max-w-md mx-auto mb-6">
-          Streaming ribuan film dan movie subtitle Indonesia secara gratis. Temukan tontonan favoritmu sekarang.
+          Streaming ribuan film JAV subtitle Indonesia secara gratis. Temukan tontonan favoritmu sekarang.
         </p>
         <div className="flex flex-wrap justify-center gap-4 text-sm font-medium text-text-muted-hover">
           <Link href="/about" className="hover:text-text-main transition-colors">About</Link>
