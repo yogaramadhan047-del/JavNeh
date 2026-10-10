@@ -1,4 +1,4 @@
-export const revalidate = 43200; // 12 Hours ISR Caching
+export const revalidate = 0; // 12 Hours ISR Caching
 
 import { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/constants";
