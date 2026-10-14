@@ -39,8 +39,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "JavNeh - Nonton Film & Movie Subtitle Indonesia Terbaru",
-    description: "Platform streaming film dan movie subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
+    title: "JavNeh - Nonton film JAV Subtitle Indonesia Terbaru Kualitas HD",
+    description: "Platform streaming fIlm JAV subtitle Indonesia terlengkap dan gratis dengan artikel, berita, dan review film terkini.",
     images: [`${SITE_URL}/og-image.jpg`],
   },
   alternates: {
