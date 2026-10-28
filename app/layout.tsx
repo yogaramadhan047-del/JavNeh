@@ -22,83 +22,55 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+const baseUrl = SITE_URL.replace(/\/+$/, "");
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://javneh.com'),
+  metadataBase: new URL(`${baseUrl}/`),
+
   title: {
-    default: `${SITE_NAME} - Nonton Film JAV Subtitle Indonesia Terbaru`,
+    default: `${SITE_NAME} — Katalog Film dan Artikel`,
     template: `%s | ${SITE_NAME}`,
   },
+
   description: SITE_DESCRIPTION,
-  keywords: [
-    "JavNeh",
-    "Njavtv",
-    "Miss Av",
-    "Podjav",
-    "Supjav",
-    "Javtiful",
-    "Jav guru",
-    "Javhey",
-    "Ngejav",
-    "JavHD",
-    "JAV Subtitle Indonesia",
-    "streaming JAV",
-    "javxsub",
-    "javsubid",
-    "javsek",
-    "JAV",
-    "Japanese Adult Video",
-    "JAV Subtitle Indonesia",
-    "JAV UNCENSORED",
-    "movie sub indo",
-    "nonton film JAV",
-    "film subtitle indonesia",
-    "streaming movie",
-    "download film JAV",
-    "JAV sub indo",
-  ],
+
   robots: {
     index: true,
     follow: true,
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
+      "max-video-preview": -1,
     },
   },
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
-  },
-  manifest: "/manifest.json",
+
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://javneh.com",
-    title: `${SITE_NAME} - Nonton Film JAV Subtitle Indonesia Terbaru`,
-    description: SITE_DESCRIPTION,
+    url: baseUrl,
     siteName: SITE_NAME,
+    title: `${SITE_NAME} — Katalog Film dan Artikel`,
+    description: SITE_DESCRIPTION,
     images: [
       {
-        url: "https://javneh.com/og-image.jpg",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} - Streaming Film JAV Terbaru`,
+        alt: SITE_NAME,
       },
     ],
   },
+
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} - Nonton Film JAV Subtitle Indonesia Terbaru`,
+    title: `${SITE_NAME} — Katalog Film dan Artikel`,
     description: SITE_DESCRIPTION,
-    images: ["https://javneh.com/og-image.jpg"],
-  },
-  alternates: {
-    canonical: 'https://javneh.com',
+    images: ["/og-image.jpg"],
   },
 };
+
 
 export default async function RootLayout({
   children,
