@@ -33,11 +33,7 @@ export async function generateMetadata({
   const contentTitle = cleanText(content.title || "Konten");
   const title = cleanText(content.seoTitle || `${contentTitle} | JavNeh`);
 
-  const rawDescription =
-    content.seoDescription ||
-    content.synopsis ||
-    `Informasi lengkap ${contentTitle} di JavNeh.`;
-
+  const rawDescription = content.seoDescription?.trim() || "";
   const description = cleanText(rawDescription).slice(0, 160);
 
   const canonical = `${SITE_URL.replace(/\/$/, "")}/movies/${encodeURIComponent(
