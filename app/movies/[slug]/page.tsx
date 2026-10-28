@@ -10,6 +10,7 @@ interface MovieDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
+
 export async function generateMetadata({
   params,
 }: MovieDetailPageProps): Promise<Metadata> {
@@ -18,38 +19,74 @@ export async function generateMetadata({
 
   if (!content) {
     return {
-      title: "Movie Tidak Ditemukan - JavNeh",
+      title: "Konten Tidak Ditemukan | JavNeh",
+      robots: {
+        index: false,
+        follow: true,
+      },
     };
   }
 
-  const title = `${content.seoTitle || `Nonton ${content.title} Sub Indo Terbaru`} - JavNeh`;
-  const description = content.seoDescription || content.synopsis?.slice(0, 160) || `Streaming & download film ${content.title} subtitle Indonesia kualitas HD gratis di JavNeh.`;
+  const cleanText = (value: string) =>
+    value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
+  const contentTitle = cleanText(content.title || "Konten");
+  const title = cleanText(content.seoTitle || `${contentTitle} | JavNeh`);
+
+  const rawDescription =
+    content.seoDescription ||
+    content.synopsis ||
+    `Informasi lengkap ${contentTitle} di JavNeh.`;
+
+  const description = cleanText(rawDescription).slice(0, 160);
+
+  const canonical = `${SITE_URL.replace(/\/$/, "")}/movies/${encodeURIComponent(
+    content.slug
+  )}`;
+
+  const image =
+    content.imageUrl || `${SITE_URL.replace(/\/$/, "")}/og-image.jpg`;
+
+  const keywords = content.seoKeywords
+    ? content.seoKeywords
+        .split(",")
+        .map((keyword: string) => keyword.trim())
+        .filter(Boolean)
+    : [contentTitle, "JavNeh"];
 
   return {
     title,
     description,
-    keywords: content.seoKeywords || `${content.title}, nonton ${content.title}, download ${content.title}, sub indo`,
+    keywords,
     alternates: {
-      canonical: `${SITE_URL}/movies/${content.slug}`,
+      canonical,
     },
     openGraph: {
+      type: "website",
       title,
       description,
-      url: `${SITE_URL}/movies/${content.slug}`,
+      url: canonical,
       siteName: "JavNeh",
+      locale: "id_ID",
       images: [
         {
-          url: content.imageUrl || `${SITE_URL}/og-image.jpg`,
+          url: image,
           width: 1200,
           height: 630,
-          alt: content.title,
+          alt: contentTitle,
         },
       ],
-      locale: "id_ID",
-      type: "video.movie",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
     },
   };
 }
+
+
 
 export default async function MovieDetailPage({
   params,
