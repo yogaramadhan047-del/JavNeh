@@ -13,7 +13,6 @@ export const revalidate = 0;
 
 const ITEMS_PER_PAGE = 10;
 
-
 export async function generateMetadata({
   searchParams,
 }: {
@@ -21,25 +20,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { genre, page } = await searchParams;
 
-  const currentPage = Math.max(
-    1,
-    Number.parseInt(page || "1", 10) || 1
-  );
-
   const normalizedGenre = genre?.trim() || "";
-  const pageSuffix = currentPage > 1
-    ? ` - Halaman ${currentPage}`
-    : "";
+  const parsedPage = Number.parseInt(page || "1", 10);
+  const currentPage =
+    Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1;
 
-  const title = normalizedGenre
-    ? `Film ${normalizedGenre} Subtitle Indonesia${pageSuffix} | JavNeh`
-    : `Daftar Film Subtitle Indonesia${pageSuffix} | JavNeh`;
-
-  const description = normalizedGenre
-    ? `Jelajahi daftar film kategori ${normalizedGenre} dengan informasi dan sinopsis lengkap di JavNeh.`
-    : `Jelajahi katalog film JavNeh, temukan judul, genre, dan sinopsis film terbaru.`;
-
-  const baseUrl = SITE_URL.replace(/\/$/, "");
+  const baseUrl = SITE_URL.replace(/\/+$/, "");
   const params = new URLSearchParams();
 
   if (normalizedGenre) {
@@ -51,25 +37,33 @@ export async function generateMetadata({
   }
 
   const query = params.toString();
-  const canonicalUrl = `${baseUrl}/movies${query ? `?${query}` : ""}`;
+  const canonical = `${baseUrl}/movies${query ? `?${query}` : ""}`;
+
+  const title = normalizedGenre
+    ? `Daftar Film Kategori ${normalizedGenre}${currentPage > 1 ? ` — Halaman ${currentPage}` : ""}`
+    : `Katalog Film${currentPage > 1 ? ` — Halaman ${currentPage}` : ""}`;
+
+  const description = normalizedGenre
+    ? `Jelajahi katalog film kategori ${normalizedGenre}. Lihat informasi dan detail setiap judul film.`
+    : `Jelajahi katalog film JavNeh, lengkap dengan halaman detail dan informasi setiap judul.`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: canonicalUrl,
-    },
-    openGraph: {
-      type: "website",
-      title,
-      description,
-      url: canonicalUrl,
-      siteName: "JavNeh",
-      locale: "id_ID",
+      canonical,
     },
     robots: {
       index: true,
       follow: true,
+    },
+    openGraph: {
+      type: "website",
+      url: canonical,
+      siteName: "JavNeh",
+      title,
+      description,
+      locale: "id_ID",
     },
   };
 }
