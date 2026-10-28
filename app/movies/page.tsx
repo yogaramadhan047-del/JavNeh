@@ -13,28 +13,45 @@ export const revalidate = 0;
 
 const ITEMS_PER_PAGE = 10;
 
+
 export async function generateMetadata({
   searchParams,
 }: {
   searchParams: Promise<{ genre?: string; page?: string }>;
 }): Promise<Metadata> {
   const { genre, page } = await searchParams;
-  const pageNum = Math.max(1, parseInt(page || "1", 10) || 1);
-  const pageSuffix = pageNum > 1 ? ` - Halaman ${pageNum}` : "";
-  const title = genre
-    ? `Nonton Movie Genre ${genre} Subtitle Indonesia${pageSuffix} - JavNeh`
-    : `Nonton Film JAV Subtitle Indonesia Terbaru${pageSuffix} - JavNeh`;
-  const description = genre
-    ? `Streaming & download film JAV genre ${genre} subtitle Indonesia terlengkap and terupdate gratis di JavNeh.`
-    : "Koleksi film JAV subtitle Indonesia terlengkap dari berbagai genre, box office, dan film bioskop terupdate di JavNeh.";
 
-  const canonicalUrl = `${SITE_URL}/movies${
-    genre
-      ? `?genre=${encodeURIComponent(genre)}${pageNum > 1 ? `&page=${pageNum}` : ""}`
-      : pageNum > 1
-      ? `?page=${pageNum}`
-      : ""
-  }`;
+  const currentPage = Math.max(
+    1,
+    Number.parseInt(page || "1", 10) || 1
+  );
+
+  const normalizedGenre = genre?.trim() || "";
+  const pageSuffix = currentPage > 1
+    ? ` - Halaman ${currentPage}`
+    : "";
+
+  const title = normalizedGenre
+    ? `Film ${normalizedGenre} Subtitle Indonesia${pageSuffix} | JavNeh`
+    : `Daftar Film Subtitle Indonesia${pageSuffix} | JavNeh`;
+
+  const description = normalizedGenre
+    ? `Jelajahi daftar film kategori ${normalizedGenre} dengan informasi dan sinopsis lengkap di JavNeh.`
+    : `Jelajahi katalog film JavNeh, temukan judul, genre, dan sinopsis film terbaru.`;
+
+  const baseUrl = SITE_URL.replace(/\/$/, "");
+  const params = new URLSearchParams();
+
+  if (normalizedGenre) {
+    params.set("genre", normalizedGenre);
+  }
+
+  if (currentPage > 1) {
+    params.set("page", String(currentPage));
+  }
+
+  const query = params.toString();
+  const canonicalUrl = `${baseUrl}/movies${query ? `?${query}` : ""}`;
 
   return {
     title,
@@ -43,15 +60,20 @@ export async function generateMetadata({
       canonical: canonicalUrl,
     },
     openGraph: {
+      type: "website",
       title,
       description,
       url: canonicalUrl,
       siteName: "JavNeh",
       locale: "id_ID",
-      type: "website",
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }
+
 
 async function getMoviesTotalCount(genre?: string, status?: string): Promise<number> {
   try {
