@@ -27,28 +27,30 @@ export async function generateMetadata({
     };
   }
 
-  const cleanText = (value: string) =>
+  const cleanText = (value: string): string =>
     value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
-  const contentTitle = cleanText(content.title || "Konten");
+  const contentTitle = cleanText(content.title || "Film");
   const title = cleanText(content.seoTitle || `${contentTitle} | JavNeh`);
 
-  const rawDescription = content.seoDescription?.trim() || "";
-  const description = cleanText(rawDescription).slice(0, 160);
+  // Gunakan SEO Description CMS, bukan synopsis.
+  const description = cleanText(content.seoDescription || "")
+    .slice(0, 160);
 
-  const canonical = `${SITE_URL.replace(/\/$/, "")}/movies/${encodeURIComponent(
+  const canonical = `${SITE_URL.replace(/\/+$/, "")}/movies/${encodeURIComponent(
     content.slug
   )}`;
 
   const image =
-    content.imageUrl || `${SITE_URL.replace(/\/$/, "")}/og-image.jpg`;
+    content.imageUrl ||
+    `${SITE_URL.replace(/\/+$/, "")}/og-image.jpg`;
 
   const keywords = content.seoKeywords
     ? content.seoKeywords
         .split(",")
-        .map((keyword: string) => keyword.trim())
+        .map((keyword) => keyword.trim())
         .filter(Boolean)
-    : [contentTitle, "JavNeh"];
+    : [];
 
   return {
     title,
@@ -81,7 +83,6 @@ export async function generateMetadata({
     },
   };
 }
-
 
 
 export default async function MovieDetailPage({
